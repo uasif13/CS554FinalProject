@@ -4,6 +4,9 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import UserHomePage from "./components/UserHomePage";
+import ProfilePage from "./components/ProfilePage";
+
+
 function App() {
   return (
     <Router>
@@ -17,6 +20,7 @@ function App() {
         </Route>
         <Route exact path="/register" component={Register} />
         <Route exact path="/userhomepage" component={UserHomePage} />
+        <Route exact path="/profile" component={ProfilePage} />
       </div>
     </Router>
   );
