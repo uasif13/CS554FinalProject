@@ -1,6 +1,5 @@
-import { Link as RouterLink } from "react-router-dom";
-import React, {useEffect, useState} from 'react'; 
-import { makeStyles, Button, TextField, FormControl,FormControlLabel, FormLabel, RadioGroup, Radio } from '@material-ui/core'; 
+import React, {useEffect} from 'react'; 
+import { makeStyles, Button, TextField} from '@material-ui/core'; 
 
 const useStyles = makeStyles({
     table: {
@@ -34,10 +33,10 @@ const ManualInsurance = () => {
             <h1> Manual Scan</h1>
             <section className="memberID">
                 <div>
-                    <h4>What is your member ID? </h4>
+                    <h2>What is your member ID? </h2>
                     <div>
                         <form className={classes.root} noValidate autoComplete="off">
-                            <TextField id="standard-basic" required label="Member ID" />
+                            <TextField id="standard-basicManualMI" required label="MemberIDManual" />
                         </form>
                     </div>
                 </div>
@@ -45,10 +44,10 @@ const ManualInsurance = () => {
 
             <section className="groupPlan">
                 <div>
-                    <h4>What is your group number?</h4>
+                    <h2>What is your group number?</h2>
                     <div>
                         <form className={classes.root} noValidate autoComplete="off">
-                            <TextField id="standard-basic" required label="Group ID" />
+                            <TextField id="standard-basicManualGI" required label="GroupIDManual" />
                         </form>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'; 
-import { makeStyles, Button, TextField, FormControl,FormControlLabel, FormLabel, RadioGroup, Radio } from '@material-ui/core'; 
+import { makeStyles, Button, TextField} from '@material-ui/core'; 
 import Tesseract from 'tesseract.js';
 import Jimp from 'jimp';
 
@@ -174,6 +174,7 @@ const ScanInsurance =() =>{
                 <input
                     type="file"
                     id="fileUploader"
+                    accept="image/x-png,image/jpeg"
                     hidden
                     onChange={uploadImage}
                 />
@@ -188,6 +189,7 @@ const ScanInsurance =() =>{
                 <Button variant="contained" 
                         className={classes.button} 
                         onClick={extractInsuranceCard}
+                        classes={{disabled: classes.button}}
                         disabled={!userUpload || (finished && (userUpload && !progress))}>
                         Scan Card
                 </Button>  
@@ -205,14 +207,15 @@ const ScanInsurance =() =>{
                 <div>
                     <section className="memberID">
                         <div>
-                            <h4>What is your member ID?  </h4>
+                            <h2>What is your member ID?  </h2>
                             <div>
                                 <form className={classes.root} noValidate autoComplete="off">
-                                    <TextField id="standard-basic" 
+                                    <TextField id="standard-basicScanMI" 
                                         required 
                                         value={memberID} 
                                         disabled={!finished}
-                                        label="Member ID" />
+                                        aria-disabled="true"
+                                        label="MemberIDScan" />
                                 </form>
                             </div>
                             {extractedText.map((text, index) =>{
@@ -224,14 +227,15 @@ const ScanInsurance =() =>{
 
                     <section className="group plan">
                         <div>
-                            <h4>What is your group number? </h4>
+                            <h2>What is your group number? </h2>
                             <div>
                                 <form className={classes.root} noValidate autoComplete="off">
-                                    <TextField id="standard-basic" 
+                                    <TextField id="standard-basicGNScan" 
                                     required 
                                     value={groupNum}
                                     disabled={!finished}
-                                    label="Group Number" />
+                                    aria-disabled="true"
+                                    label="GroupNumberScan" />
                                 </form>
                             </div>
                             {extractedText.map((text, index) =>{
