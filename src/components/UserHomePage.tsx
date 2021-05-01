@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react'; 
-import {auth, db} from '../firebaseServer';
+import {db} from '../firebaseServer';
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, Button} from '@material-ui/core'; 
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
   table: {
@@ -25,12 +26,14 @@ interface currLocation{
 };
 
 interface Location{ 
-  id: currLocation
+  key: string | null,
+  val: currLocation
 };
 
 function UserHomePage() {
   const [locations, setLocations] = useState<Array<Location>>([]); 
   const classes = useStyles();
+  const history = useHistory<currLocation>();
 
   let allLocations: Location[]= []; 
   let card = null; 
@@ -38,10 +41,12 @@ function UserHomePage() {
   useEffect(() => { 
     async function fetchData(){ 
       try{ 
-        // Calls to Firebase to refer to Location child
+
         db.ref('Locations').on("value", snapshot =>{
           snapshot.forEach(snap => { 
-            allLocations.push(snap.val()); 
+            let id = snap.key; 
+            let val = snap.val(); 
+            allLocations.push({key:id,val:val}); 
           }); 
           setLocations(allLocations); 
         }); 
@@ -51,14 +56,20 @@ function UserHomePage() {
       }
     }
     fetchData(); 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]); 
 
-  }, []); 
-
-  const buildCard =  (currLoc: any, index: number) => {
+  const BookAppointment = (location:any) => {
+    history.push("/schedule", location);
+  }
+  
+  const buildCard =  (location: any) => {
+    let index = location.key
+    let currLoc = location.val
     return(
           <TableRow key={index}>
             <TableCell component="th" scope="row">
-              {currLoc.address.city}
+              {currLoc.address.city} 
             </TableCell>
             <TableCell align="right">{currLoc.numVaccines && 
                           currLoc.numVaccines > 1 ? 
@@ -66,16 +77,22 @@ function UserHomePage() {
             </TableCell>
             <TableCell align="right">{currLoc.numVaccines && 
                         currLoc.numVaccines > 1 ? 
-                        <Button variant="contained" className={classes.button}>Book</Button> : ""} 
+                        <Button 
+                          variant="contained" 
+                          className={classes.button}
+                          onClick={() =>{BookAppointment(location)}}>
+                            Book
+                        </Button> : ""} 
             </TableCell>
           </TableRow>
     )
   }
 
   if (locations){
+
     card = locations && 
-            locations.map((currLoc, index) =>{ 
-              return buildCard(currLoc, index); 
+            locations.map((location) =>{ 
+              return buildCard(location);
             });
   }
 
