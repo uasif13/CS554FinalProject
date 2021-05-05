@@ -2,6 +2,7 @@ import { Button, TextField } from "@material-ui/core";
 import { useState } from "react";
 import "./components.css";
 import Header from "./Header";
+import axios from "axios";
 
 function Register() {
   const [error, setError] = useState("");
@@ -9,6 +10,7 @@ function Register() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
 
   const nameHandler = (event) => {
     setName(event.target.value);
@@ -16,6 +18,9 @@ function Register() {
 
   const emailHandler = (event) => {
     setEmail(event.target.value);
+  };
+  const phoneHandler = (event) => {
+    setPhone(event.target.value);
   };
 
   const usernameHandler = (event) => {
@@ -25,6 +30,24 @@ function Register() {
   const passwordHandler = (event) => {
     setPassword(event.target.value);
   };
+
+  async function submit() {
+    axios({
+      method: "post",
+      url: "http://localhost:8080/api/sendMessage",
+      data: {
+        destination: "+1" + phone,
+        message:
+          "Hello! Thank you for signing up to our Covid-19 vaccine scheduler. Use this app to look around and find vaccines near you.",
+      },
+    })
+      .then(() => {
+        console.log("Success");
+      })
+      .catch((e) => {
+        console.log(e.message);
+      });
+  }
 
   return (
     <div>
@@ -43,6 +66,13 @@ function Register() {
         <br />
         <TextField
           variant="filled"
+          onChange={phoneHandler}
+          placeholder="Phone Number (E.x. 9081292233)"
+        />
+        <br />
+        <br />
+        <TextField
+          variant="filled"
           onChange={usernameHandler}
           placeholder="Username"
         />
@@ -56,7 +86,7 @@ function Register() {
         />
         <br />
         <br />
-        <Button variant="contained" color="primary">
+        <Button onClick={submit} variant="contained" color="primary">
           Submit
         </Button>
         <br />
