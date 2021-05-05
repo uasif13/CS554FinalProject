@@ -20,7 +20,7 @@
 <ol>
     <li>Run `npm install` inside /vaccine-scheduler</li>
     <li>Create a file .env inside of /vaccine-scheduler</li>
-    <li>Implement firebase constant absent from the app<li>
+    <li>Implement firebase constant absent from the app</li>
     <li><b>Note for Grading: </b>The .env file is present inside the zipped submisson</li>
     <li>Run `npm start`</li>
 </ol>
