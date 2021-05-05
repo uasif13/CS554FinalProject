@@ -1,7 +1,10 @@
 import { Button, TextField } from "@material-ui/core";
-import { useState } from "react";
+import React, { useState, ChangeEvent } from "react";
 import "./components.css";
 import Header from "./Header";
+import { doCreateUserWithEmailandPassword } from "../firebase/firebaseFunctions";
+import SocialSignIn from "./doSocialSignIn";
+import { useHistory } from "react-router-dom";
 
 function Register() {
   const [error, setError] = useState("");
@@ -9,20 +12,24 @@ function Register() {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const history = useHistory();
 
-  const nameHandler = (event) => {
+  const createAccount = async () => {
+    await doCreateUserWithEmailandPassword(email, password, username);
+  };
+  const nameHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
   };
 
-  const emailHandler = (event) => {
+  const emailHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
   };
 
-  const usernameHandler = (event) => {
+  const usernameHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
   };
 
-  const passwordHandler = (event) => {
+  const passwordHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
   };
 
@@ -56,10 +63,19 @@ function Register() {
         />
         <br />
         <br />
-        <Button variant="contained" color="primary">
+        <Button
+          onClick={(e) => {
+            e.preventDefault();
+            createAccount();
+            history.push("/account");
+          }}
+          variant="contained"
+          color="primary"
+        >
           Submit
         </Button>
         <br />
+        <SocialSignIn />
         <p>{error}</p>
         <p>
           Already have an account? <a href="/login">Log In</a>

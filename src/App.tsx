@@ -7,7 +7,6 @@ import UserHomePage from "./components/UserHomePage";
 import ProfilePage from "./components/ProfilePage";
 import Schedule from "./components/Schedule";
 
-
 function App() {
   return (
     <Router>
@@ -22,7 +21,7 @@ function App() {
         <Route exact path="/register" component={Register} />
         <Route exact path="/userhomepage" component={UserHomePage} />
         <Route exact path="/profile" component={ProfilePage} />
-        <Route exact path="/schedule" component={Schedule}/>
+        <Route exact path="/schedule" component={Schedule} />
       </div>
     </Router>
   );

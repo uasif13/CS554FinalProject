@@ -1,91 +1,113 @@
-import React, {useEffect, useState} from 'react';
-import {auth, db} from '../firebaseServer';
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, makeStyles, Button} from '@material-ui/core';
+import React, { useEffect, useState } from "react";
+import { auth, db } from "../firebase/firebaseServer";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  makeStyles,
+  Button,
+} from "@material-ui/core";
 
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
   },
-  button:{
-    background: '#3D4CBC',
-    color: 'white'
-  }
+  button: {
+    background: "#3D4CBC",
+    color: "white",
+  },
 });
 
-interface address{
-  city: string,
-  state: string,
-  street: string,
-  zip: string
-};
+interface address {
+  city: string;
+  state: string;
+  street: string;
+  zip: string;
+}
 
-interface currLocation{
-  address: address,
-  numVaccines: number
-};
+interface currLocation {
+  address: address;
+  numVaccines: number;
+}
 
-interface Location{
-  id: currLocation
-};
+interface Location {
+  id: currLocation;
+}
 
 function AdminHomePage() {
   const [locations, setLocations] = useState<Array<Location>>([]);
   const classes = useStyles();
 
-  let allLocations: Location[]= [];
+  let allLocations: Location[] = [];
   let card = null;
 
   useEffect(() => {
-    async function fetchData(){
-      try{
+    async function fetchData() {
+      try {
         // Calls to Firebase to refer to Location child
-        db.ref('Locations').on("value", snapshot =>{
-          snapshot.forEach(snap => {
+        db.ref("Locations").on("value", (snapshot) => {
+          snapshot.forEach((snap) => {
             allLocations.push(snap.val());
           });
           setLocations(allLocations);
         });
-
-      }catch(e){
+      } catch (e) {
         console.log(e);
       }
     }
     fetchData();
-
   }, []);
 
-  const buildCard =  (currLoc: any, index: number) => {
-    return(
-          <TableRow key={index}>
-            <TableCell component="th" scope="row">
-              {currLoc.address.city}
-            </TableCell>
-            <TableCell align="right">{currLoc.numVaccines &&
-                        currLoc.numVaccines > 1 ?
-                          "Available" : "Fully Booked"}
-            </TableCell>
-            <TableCell align="right">{currLoc.numVaccines ?
-                        <Button variant="contained" className={classes.button}>Increase Vaccines by 1</Button> : ""}
-            </TableCell>
-            <TableCell align="right">{currLoc.numVaccines ?
-                        <Button variant="contained" className={classes.button}>Decrease Vaccines by 1</Button> : ""}
-            </TableCell>
-          </TableRow>
-    )
+  const buildCard = (currLoc: any, index: number) => {
+    return (
+      <TableRow key={index}>
+        <TableCell component="th" scope="row">
+          {currLoc.address.city}
+        </TableCell>
+        <TableCell align="right">
+          {currLoc.numVaccines && currLoc.numVaccines > 1
+            ? "Available"
+            : "Fully Booked"}
+        </TableCell>
+        <TableCell align="right">
+          {currLoc.numVaccines ? (
+            <Button variant="contained" className={classes.button}>
+              Increase Vaccines by 1
+            </Button>
+          ) : (
+            ""
+          )}
+        </TableCell>
+        <TableCell align="right">
+          {currLoc.numVaccines ? (
+            <Button variant="contained" className={classes.button}>
+              Decrease Vaccines by 1
+            </Button>
+          ) : (
+            ""
+          )}
+        </TableCell>
+      </TableRow>
+    );
+  };
+
+  if (locations) {
+    card =
+      locations &&
+      locations.map((currLoc, index) => {
+        return buildCard(currLoc, index);
+      });
   }
 
-  if (locations){
-    card = locations &&
-            locations.map((currLoc, index) =>{
-              return buildCard(currLoc, index);
-            });
-  }
-
-  return(
+  return (
     <div>
       <h1>Covid Scheduler</h1>
       <p>Admin Home Page</p>
-        <TableContainer component={Paper}>
+      <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
@@ -95,10 +117,8 @@ function AdminHomePage() {
               <TableCell align="right">Decrease Vaccines</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-          {card}
-          </TableBody>
-          </Table>
+          <TableBody>{card}</TableBody>
+        </Table>
       </TableContainer>
     </div>
   );
