@@ -2,6 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { makeStyles, Button } from "@material-ui/core";
 import { db } from "../firebase/firebaseServer";
+import ScheduleModal from './modals/ScheduleModal';
+import styled from 'styled-components';
+import { GlobalStyle } from '.././globalStyles';
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
 
 const useStyles = makeStyles({
   table: {
@@ -56,7 +65,7 @@ const Schedule = () => {
   const [street, setStreet] = useState<string>();
   const [zip, setZip] = useState<string>();
   const [time, setTime] = useState<Array<number>>();
-
+  const [showScheduleModal, setScheduleModal]= useState<boolean>(false);
   const [data, setData] = useState<{ [key: string]: [times: number] }>();
 
   useEffect(() => {
@@ -109,11 +118,16 @@ const Schedule = () => {
   const showTimes = (times: any) => {
     setTime(times);
   };
-
-  const chooseAppointment = () => {
-    console.log("User Chose Appointment. Push to Firebase");
+  const openModal = () =>{
+    setScheduleModal(prev => !prev);
+}
+const chooseAppointment = () =>{
+    console.log("User Chose Appointment. Push to Firebase"); 
     // TODO: Connect to firebase, {need user to be logged in}
-  };
+    //Open the modal
+    // handleOpenScheduleModal(city,stateLoc,street, zip, date)
+    openModal();
+}
 
   const buildTimes = (times: any, index: number) => {
     return (
@@ -126,6 +140,7 @@ const Schedule = () => {
         >
           {times > 12 ? times - 12 + ":00 pm" : times + ":00 am"}
         </Button>
+        
       </div>
     );
   };
@@ -177,6 +192,11 @@ const Schedule = () => {
               })
             : "No Times Available"}
         </div>
+       
+        <ScheduleModal showScheduleModal={showScheduleModal} setScheduleModal={setScheduleModal} city={city} stateLoc={stateLoc}/>
+        <GlobalStyle />
+       
+        
       </div>
     );
   } else {
