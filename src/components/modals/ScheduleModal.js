@@ -1,211 +1,139 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { makeStyles, Button } from "@material-ui/core";
-import { db } from "../firebase/firebaseServer";
-import ScheduleModal from './modals/ScheduleModal';
+import React, { useRef, useEffect, useCallback } from 'react';
+import ReactModal from 'react-modal';
+import { useHistory } from "react-router-dom";
 import styled from 'styled-components';
-import { GlobalStyle } from '.././globalStyles';
-const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-`;
+import { MdClose } from 'react-icons/md';
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-  button: {
-    background: "#3D4CBC",
-    color: "white",
-    margin: "10px",
-  },
 
-  address: {
-    textAlign: "left",
-  },
-  chooseDate: {
-    width: "25ch",
-    alignItems: "center",
-    justifyContent: "center",
-    margin: "auto",
-    padding: "12px",
-    position: "relative",
-  },
-});
-interface address {
-  city: string;
-  state: string;
-  street: string;
-  zip: string;
-}
-
-interface appointments {
-  key: boolean;
-}
-
-interface currLocation {
-  address: address;
-  numVaccines: number;
-  appointmentsForLocation: appointments;
-}
-
-interface Location {
-  key: string;
-  val: currLocation;
-}
-
-const Schedule = () => {
-  const classes = useStyles();
-  const { state } = useLocation<Location>();
-
-  const [city, setCity] = useState<string>();
-  const [stateLoc, setState] = useState<string>();
-  const [street, setStreet] = useState<string>();
-  const [zip, setZip] = useState<string>();
-  const [time, setTime] = useState<Array<number>>();
-  const [showScheduleModal, setScheduleModal]= useState<boolean>(false);
-  const [data, setData] = useState<{ [key: string]: [times: number] }>();
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        let location = state.val.appointmentsForLocation;
-        let obj: { [key: string]: [times: number] } = {};
-
-        await Promise.all(
-          Object.keys(location).map(async (key) => {
-            let snapshot = await db.ref("Appointments/" + key).once("value");
-
-            let value = snapshot.val();
-            let day = value.date.day;
-            let month = value.date.month;
-            let year = value.date.year;
-            let time = value.time;
-
-            let apt = new Date(year, month, day);
-
-            if (!obj[apt.toString()]) {
-              obj[apt.toString()] = [time];
-            } else {
-              obj[apt.toString()].push(time);
-            }
-
-            return obj;
-          })
-        );
-
-        setData(obj);
-
-        setCity(state.val.address.city);
-        setState(state.val.address.state);
-        setStreet(state.val.address.street);
-        setZip(state.val.address.zip);
-      } catch (e) {
-        console.log(e);
-      }
-    }
-    fetchData();
-  }, [
-    state.val.address.city,
-    state.val.address.state,
-    state.val.address.street,
-    state.val.address.zip,
-    state.val.appointmentsForLocation,
-  ]);
-
-  const showTimes = (times: any) => {
-    setTime(times);
-  };
-  const openModal = () =>{
-    setScheduleModal(prev => !prev);
-}
-const chooseAppointment = () =>{
-    console.log("User Chose Appointment. Push to Firebase"); 
-    // TODO: Connect to firebase, {need user to be logged in}
-    //Open the modal
-    // handleOpenScheduleModal(city,stateLoc,street, zip, date)
-    openModal();
-}
-
-  const buildTimes = (times: any, index: number) => {
-    return (
-      <div key={index}>
-        <Button
-          variant="contained"
-          className={classes.button}
-          key={index}
-          onClick={chooseAppointment}
-        >
-          {times > 12 ? times - 12 + ":00 pm" : times + ":00 am"}
-        </Button>
-        
-      </div>
-    );
-  };
-
-  const buildButtons = (buttons: any, times: any) => {
-    return (
-      <div key={times}>
-        <Button
-          variant="contained"
-          className={classes.button}
-          onClick={() => {
-            showTimes(times);
-          }}
-        >
-          {buttons.slice(0, 10)}
-        </Button>
-      </div>
-    );
-  };
-
-  if (data) {
-    return (
-      <div>
-        <div className={classes.address}>
-          <h1>
-            Location: {city}, {stateLoc}
-          </h1>
-          <p>{street}</p>
-          <p>
-            {city}, {stateLoc}, {zip}
-          </p>
-        </div>
-        <div className="form-card">
-          <div className={classes.chooseDate}>
-            <h2>Choose Date: </h2>
-            <br />
-            <div>
-              {Object.keys(data).map((key) => {
-                return buildButtons(key, data[key]);
-              })}
-            </div>
-          </div>
-        </div>
-        <div className="form-card">
-          <h2>Choose Time:</h2>
-          {time
-            ? time.map((key, index) => {
-                return buildTimes(key, index);
-              })
-            : "No Times Available"}
-        </div>
-       
-        <ScheduleModal showScheduleModal={showScheduleModal} setScheduleModal={setScheduleModal} city={city} stateLoc={stateLoc}/>
-        <GlobalStyle />
-       
-        
-      </div>
-    );
-  } else {
-    return (
-      <div>
-        <h1>Loading...</h1>
-      </div>
-    );
+ReactModal.setAppElement('#root');
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    width: '50%',
+    border: '1px solid #28547a',
+    borderRadius: '4px'
   }
 };
 
-export default Schedule;
+const Background = styled.div`
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalWrapper = styled.div`
+  width: 800px;
+  height: 500px;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  color: #000;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  z-index: 10;
+  border-radius: 10px;
+`;
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  line-height: 1.8;
+  color: #141414;
+  p {
+    margin-bottom: 1rem;
+  }
+  button {
+    padding: 10px 24px;
+    background: #141414;
+    color: #fff;
+    border: none;
+  }
+`;
+
+const CloseModalButton = styled(MdClose)`
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  z-index: 10;
+`;
+
+
+ function ScheduleModal ({showScheduleModal, setScheduleModal, city, stateLoc}) {
+  const modalRef = useRef();
+  const history = useHistory();
+
+  const routeChange = () =>{ 
+    let path = `/userhomepage`; 
+    history.push(path);
+  }
+  // const animation = useSpring({
+  //   config: {
+  //     duration: 10000
+  //   },
+  //   opacity: showScheduleModal ? 1 : 0,
+  //   transform: showScheduleModal ? `translateY(0%)` : `translateY(-100%)`
+  // });
+  const closeModal = e => {
+    if (modalRef.current === e.target) {
+      setScheduleModal(false);
+    }
+  };
+  const keyPress = useCallback(
+    e => {
+      if (e.key === 'Escape' && showScheduleModal) {
+        setScheduleModal(false);
+        console.log('I pressed');
+      }
+    },
+    [setScheduleModal, showScheduleModal]
+  );
+  useEffect(
+    () => {
+      document.addEventListener('keydown', keyPress);
+      return () => document.removeEventListener('keydown', keyPress);
+    },
+    [keyPress]
+  );
+  return (
+    <>
+    
+    {showScheduleModal ? (
+      <ReactModal 
+      name="scheduleModal"
+      isOpen={showScheduleModal}
+      contentLabel="Appointment Sch"
+      style={customStyles}>
+        
+            <h1>You have successfully booked <br />
+           an appointment at </h1>
+           <p>{city}, {stateLoc}</p>
+                <button onClick={routeChange}>Return to Homepage</button>
+              
+              <CloseModalButton
+                aria-label='Close modal'
+                onClick={() => setScheduleModal(prev => !prev)}
+              />
+        
+        </ReactModal>
+    ): null }
+    
+    </>
+  )
+}
+
+export default ScheduleModal ;
