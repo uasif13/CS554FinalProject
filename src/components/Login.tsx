@@ -24,7 +24,7 @@ const Login = (props: { admin: Boolean }) => {
     <div>
       <Header />
       <h1 className="title">
-        Login as {props.admin == true ? "Admin" : "User"}
+        Login as User
       </h1>
       <div className="form-card">
         <TextField
@@ -50,7 +50,7 @@ const Login = (props: { admin: Boolean }) => {
           onClick={(e) => {
             e.preventDefault();
             doSignInWithEmailAndPassword(username, password);
-            history.push("/account");
+            history.push("/userhomepage");
           }}
           variant="contained"
           color="primary"

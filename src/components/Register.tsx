@@ -67,7 +67,7 @@ function Register() {
           onClick={(e) => {
             e.preventDefault();
             createAccount();
-            history.push("/account");
+            history.push("/profile");
           }}
           variant="contained"
           color="primary"

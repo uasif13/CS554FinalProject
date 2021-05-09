@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import UserHomePage from "./components/UserHomePage";
+import AdminHomePage from "./components/AdminHomePage";
 import ProfilePage from "./components/ProfilePage";
 import Schedule from "./components/Schedule";
 
@@ -22,6 +23,7 @@ function App() {
         <Route exact path="/userhomepage" component={UserHomePage} />
         <Route exact path="/profile" component={ProfilePage} />
         <Route exact path="/schedule" component={Schedule} />
+        <Route exact path="/adminhomepage" component={AdminHomePage} />
       </div>
     </Router>
   );
