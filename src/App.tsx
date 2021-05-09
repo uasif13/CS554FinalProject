@@ -2,11 +2,13 @@ import "./App.css";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import Home from "./components/Home";
 import Login from "./components/Login";
+import LoginAdmin from "./components/LoginAdmin";
 import Register from "./components/Register";
 import UserHomePage from "./components/UserHomePage";
 import AdminHomePage from "./components/AdminHomePage";
 import ProfilePage from "./components/ProfilePage";
 import Schedule from "./components/Schedule";
+import AdminHomePage from "./components/AdminHomePage";
 
 function App() {
   return (
@@ -17,7 +19,7 @@ function App() {
           <Login admin={false} />
         </Route>
         <Route exact path="/login/admin">
-          <Login admin={true} />
+          <LoginAdmin admin={true} />
         </Route>
         <Route exact path="/register" component={Register} />
         <Route exact path="/userhomepage" component={UserHomePage} />
