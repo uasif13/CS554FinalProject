@@ -8,7 +8,6 @@ import UserHomePage from "./components/UserHomePage";
 import AdminHomePage from "./components/AdminHomePage";
 import ProfilePage from "./components/ProfilePage";
 import Schedule from "./components/Schedule";
-import AdminHomePage from "./components/AdminHomePage";
 
 function App() {
   return (

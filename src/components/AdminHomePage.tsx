@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebase/firebaseServer";
+import { doIncrementVaccines } from "../firebase/firebaseFunctions";
+import { doDecrementVaccines } from "../firebase/firebaseFunctions";
 import {
   Table,
   TableBody,
@@ -75,7 +77,11 @@ function AdminHomePage() {
         </TableCell>
         <TableCell align="right">
           {currLoc.numVaccines ? (
-            <Button variant="contained" className={classes.button}>
+            <Button variant="contained" className={classes.button}
+            onClick={(e) => {
+              e.preventDefault();
+              doDecrementVaccines(currLoc);
+            }}>
               Increase Vaccines by 1
             </Button>
           ) : (
@@ -84,7 +90,11 @@ function AdminHomePage() {
         </TableCell>
         <TableCell align="right">
           {currLoc.numVaccines ? (
-            <Button variant="contained" className={classes.button}>
+            <Button variant="contained" className={classes.button}
+            onClick={(e) => {
+              e.preventDefault();
+              doIncrementVaccines(currLoc);
+            }}>
               Decrease Vaccines by 1
             </Button>
           ) : (

@@ -46,6 +46,14 @@ async function doSignOut() {
   await firebase.auth().signOut();
 }
 
+async function doIncrementVaccines(location: object) {
+  
+}
+
+async function doDecrementVaccines(location: object) {
+
+}
+
 export {
   doCreateUserWithEmailandPassword,
   doChangePassword,
@@ -53,4 +61,6 @@ export {
   doSocialSignIn,
   doPasswordReset,
   doSignOut,
+  doIncrementVaccines,
+  doDecrementVaccines
 };
