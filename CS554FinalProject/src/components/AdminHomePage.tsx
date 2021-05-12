@@ -101,6 +101,11 @@ function AdminHomePage() {
             ""
           )}
         </TableCell>
+        <TableCell align="right">
+            <Button variant="contained" color="secondary">
+              Send Alert
+            </Button>
+        </TableCell>
       </TableRow>
     );
   };
@@ -125,6 +130,7 @@ function AdminHomePage() {
               <TableCell align="right">Status</TableCell>
               <TableCell align="right">Increase Vaccines</TableCell>
               <TableCell align="right">Decrease Vaccines</TableCell>
+              <TableCell align="right">Notify Subscribers</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>{card}</TableBody>
