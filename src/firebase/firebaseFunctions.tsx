@@ -5,8 +5,15 @@ async function doCreateUserWithEmailandPassword(
   password: string,
   displayName: string
 ) {
-  await firebase.auth().createUserWithEmailAndPassword(email, password);
-  firebase.auth().currentUser?.updateProfile({ displayName: displayName });
+	try{
+		await firebase.auth().createUserWithEmailAndPassword(email, password)
+		// await firebase.auth().currentUser?.updateProfile({ displayName: displayName });
+	
+	}catch(e){
+		console.log(e)
+		return e.code
+	}
+
 }
 
 async function doChangePassword(

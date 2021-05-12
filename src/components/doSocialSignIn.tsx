@@ -14,12 +14,14 @@ const SocialSignIn = () => {
       <img
         onClick={() => socialSignIn("google")}
         alt="google signin"
-        src="/img/googleIcon.jpg"
+        src="/img/search.png"
+		className="photo"
       />
       <img
         onClick={() => socialSignIn("facebook")}
         alt="facebook signin"
-        src="/img/facebookIcon.jpg"
+        src="/img/facebook.png"
+		className="photo"
       />
     </div>
   );
