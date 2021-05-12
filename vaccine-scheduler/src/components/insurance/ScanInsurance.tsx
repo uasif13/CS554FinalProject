@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from 'react'; 
-import { makeStyles, Button, TextField, FormControl,FormControlLabel, FormLabel, RadioGroup, Radio } from '@material-ui/core'; 
+import { makeStyles, Button, TextField} from '@material-ui/core'; 
 import Tesseract from 'tesseract.js';
-import ImageUploader from 'react-images-upload';
-import "../components.css";
-
+import Jimp from 'jimp';
 
 const useStyles = makeStyles({
     table: {
@@ -47,35 +45,49 @@ const ScanInsurance =() =>{
     const [userUpload, setUserUpload] = useState(true); 
     const [progress, setProgress] = useState(false);
     const [finished, setFinished] = useState(false)
+    const [JIMPuploading, setJIMPUploading] = useState(false)
+    const [reset, setReset] = useState(false);
 
     const [memberID, setMemberID] = useState(""); 
     const [groupNum, setGroupNum] = useState(""); 
-
 
     useEffect(() =>{
         async function fetchData(){
             setProgress(false); 
             setUserUpload(false); 
             setFinished(false); 
+            setJIMPUploading(false); 
+            setExtractedText([]);
+            setMemberID(""); 
+            setGroupNum(""); 
         }
         fetchData();
-    }, []);
+    }, [reset]);
 
     
-    const uploadImage = (picture: any) =>{
+    const uploadImage = async (picture: any) =>{
         console.log("Uploaded Image"); 
-        console.log("Image: ", picture)
         if (picture.length === 0){
             setUserUpload(false); 
             setExtractedText([]);
             setMemberID(""); 
             setGroupNum("");
         }else{
-
-            // TODO Convert Image to BW 
-
-            setUserUpload(true); 
-            setUpload(picture[0]); 
+            setJIMPUploading(true); 
+            let url = URL.createObjectURL(picture.target.files[0])
+            await Jimp.read(url)
+                        .then(image =>{
+                            return image
+                            .quality(60)                 
+                            .greyscale()              
+                            .getBase64(Jimp.MIME_JPEG, function (err, src) {
+                                setUpload(src); 
+                                setUserUpload(true); 
+                                setJIMPUploading(false); 
+                        });
+                        }).catch(err => {
+                            console.log(err); 
+                        });
         }
     };
 
@@ -103,14 +115,27 @@ const ScanInsurance =() =>{
     const handleSetMemberID = (memberID: string) => {
         console.log("Handling Member ID", memberID);
         setMemberID(memberID); 
-        // TODO: call to firebase to upload member id (need user to be logged in)
+
     };
 
     const handleSetGroupNumber = (groupNum: string) =>{
         console.log("Handling Group Number", groupNum); 
         setGroupNum(groupNum);
-        // TODO: call to firebase to upload group number (need user to be logged in)
+
     };
+
+    const pushToFireBase = () =>{
+        console.log("Push to firebase")
+        setReset(true); 
+        // TODO: call to firebase to upload member id (need user to be logged in)
+        // TODO: call to firebase to upload group number (need user to be logged in)
+    }
+
+    const clearStates = () =>{
+        console.log("Clearing States")
+        setReset(true); 
+
+    }
 
     const buildButtons = (text: any, index: number, item: number) =>{
         return(
@@ -139,40 +164,58 @@ const ScanInsurance =() =>{
         <div>
             <h1>Scan Insurance Card</h1>
             <div className="form-card">
-                <h6>*only works with black/white images*</h6>
             <div className={classes.fileUploader}>
-                <ImageUploader 
-                    withIcon = {true}
-                    withPreview = {true}
-                    buttonText="Choose Image"
+            <Button
+                variant="contained"
+                component="label"
+                className={classes.button}
+                disabled={userUpload}>
+                Upload Card
+                <input
+                    type="file"
+                    id="fileUploader"
+                    accept="image/x-png,image/jpeg"
+                    hidden
                     onChange={uploadImage}
-                    imgExtension={[".jpg", ".png"]}
-                    maxFileSize={5242880}/>
+                />
+            </Button>
+            </div> 
+            <br/>
+            <div id="JIMPProgress">
+                {(JIMPuploading) ? "...uploading insurance card..." : ""}
             </div>
-
+            <br/>
             <div>
                 <Button variant="contained" 
                         className={classes.button} 
                         onClick={extractInsuranceCard}
-                        disabled={!userUpload}>
+                        classes={{disabled: classes.button}}
+                        disabled={!userUpload || (finished && (userUpload && !progress))}>
                         Scan Card
                 </Button>  
+                <br/>
                 <div id="progress">
                     {!(finished) ? 
                         (userUpload && progress) ? 
                             <h6>...please wait...<br/>
-                            ...extracting text..."</h6> : 
-                            <h6 className="required">*Upload Image*</h6> : 
-                            "Completed"} 
+                            ...extracting text...</h6> : 
+                            "" : 
+                            <div><br/>
+                            <h6>Completed</h6></div>} 
                 </div>
                 <hr/>
                 <div>
                     <section className="memberID">
                         <div>
-                            <h4>What is your member ID?  </h4>
+                            <h2>What is your member ID?  </h2>
                             <div>
                                 <form className={classes.root} noValidate autoComplete="off">
-                                    <TextField id="standard-basic" required value={memberID} disabled={!finished}label="Member ID" />
+                                    <TextField id="standard-basicScanMI" 
+                                        required 
+                                        value={memberID} 
+                                        disabled={!finished}
+                                        aria-disabled="true"
+                                        label="MemberIDScan" />
                                 </form>
                             </div>
                             {extractedText.map((text, index) =>{
@@ -184,10 +227,15 @@ const ScanInsurance =() =>{
 
                     <section className="group plan">
                         <div>
-                            <h4>What is your group number? </h4>
+                            <h2>What is your group number? </h2>
                             <div>
                                 <form className={classes.root} noValidate autoComplete="off">
-                                    <TextField id="standard-basic" required value={groupNum}disabled={!finished}label="Group Number" />
+                                    <TextField id="standard-basicGNScan" 
+                                    required 
+                                    value={groupNum}
+                                    disabled={!finished}
+                                    aria-disabled="true"
+                                    label="GroupNumberScan" />
                                 </form>
                             </div>
                             {extractedText.map((text, index) =>{
@@ -199,11 +247,23 @@ const ScanInsurance =() =>{
                 </div>
                 <br/>
                 <br/>
+                <div className={classes.buttonRows}>
                 <Button variant="contained" 
                     className={classes.button} 
-                    disabled={!finished}>
+                    disabled={!finished}
+                    onClick={clearStates}>
+                    Reset
+                </Button> 
+                <br/>
+                <br/>
+                <Button variant="contained" 
+                    className={classes.button} 
+                    disabled={!finished}
+                    onClick={pushToFireBase}>
                     Submit
                 </Button> 
+                </div>
+
             </div>
             </div>
            

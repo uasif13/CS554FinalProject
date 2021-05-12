@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../firebaseServer";
+import { auth, db } from "../firebase/firebaseServer";
+import { doIncrementVaccines } from "../firebase/firebaseFunctions";
+import { doDecrementVaccines } from "../firebase/firebaseFunctions";
 import {
   Table,
   TableBody,
@@ -11,7 +13,6 @@ import {
   makeStyles,
   Button,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
   table: {
@@ -36,14 +37,12 @@ interface currLocation {
 }
 
 interface Location {
-  key: string | null;
-  val: currLocation;
+  id: currLocation;
 }
 
-function UserHomePage() {
+function AdminHomePage() {
   const [locations, setLocations] = useState<Array<Location>>([]);
   const classes = useStyles();
-  const history = useHistory<currLocation>();
 
   let allLocations: Location[] = [];
   let card = null;
@@ -51,11 +50,10 @@ function UserHomePage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        // Calls to Firebase to refer to Location child
         db.ref("Locations").on("value", (snapshot) => {
           snapshot.forEach((snap) => {
-            let id = snap.key;
-            let val = snap.val();
-            allLocations.push({ key: id, val: val });
+            allLocations.push(snap.val());
           });
           setLocations(allLocations);
         });
@@ -64,16 +62,9 @@ function UserHomePage() {
       }
     }
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const BookAppointment = (location: any) => {
-    history.push("/schedule", location);
-  };
-
-  const buildCard = (location: any) => {
-    let index = location.key;
-    let currLoc = location.val;
+  const buildCard = (currLoc: any, index: number) => {
     return (
       <TableRow key={index}>
         <TableCell component="th" scope="row">
@@ -85,15 +76,26 @@ function UserHomePage() {
             : "Fully Booked"}
         </TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines && currLoc.numVaccines > 1 ? (
-            <Button
-              variant="contained"
-              className={classes.button}
-              onClick={() => {
-                BookAppointment(location);
-              }}
-            >
-              Book
+          {currLoc.numVaccines ? (
+            <Button variant="contained" className={classes.button}
+            onClick={(e) => {
+              e.preventDefault();
+              doDecrementVaccines(currLoc);
+            }}>
+              Increase Vaccines by 1
+            </Button>
+          ) : (
+            ""
+          )}
+        </TableCell>
+        <TableCell align="right">
+          {currLoc.numVaccines ? (
+            <Button variant="contained" className={classes.button}
+            onClick={(e) => {
+              e.preventDefault();
+              doIncrementVaccines(currLoc);
+            }}>
+              Decrease Vaccines by 1
             </Button>
           ) : (
             ""
@@ -106,22 +108,23 @@ function UserHomePage() {
   if (locations) {
     card =
       locations &&
-      locations.map((location) => {
-        return buildCard(location);
+      locations.map((currLoc, index) => {
+        return buildCard(currLoc, index);
       });
   }
 
   return (
     <div>
       <h1>Covid Scheduler</h1>
-      <p>User Home Page</p>
+      <p>Admin Home Page</p>
       <TableContainer component={Paper}>
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell> City/Town</TableCell>
               <TableCell align="right">Status</TableCell>
-              <TableCell align="right">Book Appointment</TableCell>
+              <TableCell align="right">Increase Vaccines</TableCell>
+              <TableCell align="right">Decrease Vaccines</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>{card}</TableBody>
@@ -131,4 +134,4 @@ function UserHomePage() {
   );
 }
 
-export default UserHomePage;
+export default AdminHomePage;
