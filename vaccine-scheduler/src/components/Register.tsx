@@ -14,6 +14,16 @@ function Register() {
   const [password, setPassword] = useState("");
   const history = useHistory();
 
+  const validatePassword = (pw) => {
+
+    return /[A-Z]/       .test(pw) &&
+           /[a-z]/       .test(pw) &&
+           /[0-9]/       .test(pw) &&
+           /[^A-Za-z0-9]/.test(pw) &&
+           pw.length > 4;
+
+}
+
   const createAccount = async () => {
 	if (name.trim().length === 0){
 		setError("Name is required")
@@ -27,10 +37,16 @@ function Register() {
 	else if(username.trim().length === 0){
 		setError("Username is required");
 	}
-	else if(password.trim().length === 0){
-		setError("Password is required");
+	else if(password.trim().length < 5){
+		setError("Password must be of length 5 or greater");
 	}
 	else{
+
+		if (!validatePassword(password.trim())) {		
+			setError("Password must contain an uppercase, lowercase letter and a number");
+			return;
+		}
+
 		let response = await doCreateUserWithEmailandPassword(email, password, username);
 
 		if (response === "auth/email-already-in-use"){
