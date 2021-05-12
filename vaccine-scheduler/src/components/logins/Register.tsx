@@ -1,9 +1,8 @@
 import { Button, TextField, FormControl } from "@material-ui/core";
 import React, { useState, ChangeEvent } from "react";
-import "./components.css";
-import Header from "./Header";
-import { doCreateUserWithEmailandPassword } from "../firebase/firebaseFunctions";
-import SocialSignIn from "./doSocialSignIn";
+import Header from "../Header";
+import { doCreateUserWithEmailandPassword } from "../../firebase/firebaseFunctions";
+import SocialSignIn from "../doSocialSignIn";
 import { useHistory } from "react-router-dom";
 
 function Register() {
@@ -32,7 +31,7 @@ function Register() {
 		setError("Email is required"); 
 	}
 	else if(!email.includes('@')){
-		setError("Badly formed email")
+		setError("Badly formatted email")
 	}
 	else if(username.trim().length === 0){
 		setError("Username is required");

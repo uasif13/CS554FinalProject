@@ -7,7 +7,7 @@ async function doCreateUserWithEmailandPassword(
 ) {
 	try{
 		await firebase.auth().createUserWithEmailAndPassword(email, password)
-		// await firebase.auth().currentUser?.updateProfile({ displayName: displayName });
+		firebase.auth().currentUser?.updateProfile({ displayName: displayName });
 	
 	}catch(e){
 		console.log(e)
@@ -31,8 +31,13 @@ async function doChangePassword(
 }
 
 async function doSignInWithEmailAndPassword(email: string, password: string) {
-  await firebase.auth().signInWithEmailAndPassword(email, password);
-}
+	try{
+		  await firebase.auth().signInWithEmailAndPassword(email, password);
+	}catch(e){
+		  console.log(e); 
+		  return e
+	}
+  }
 
 async function doSocialSignIn(provider: string) {
   let socialProvider = null;
