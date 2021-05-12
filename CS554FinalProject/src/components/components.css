@@ -1,0 +1,67 @@
+.form-card {
+  box-shadow: 3px 3px 13px lightgray;
+  width: 400px;
+  margin: 40px auto;
+  padding: 30px 20px 20px 20px;
+  border-radius: 5px;
+}
+
+.title {
+  color: #3d4cbc;
+}
+
+.form-card input {
+  width: 300px;
+}
+
+.form-card button {
+  width: 200px;
+}
+
+.form-card p {
+  color: grey;
+}
+
+.form-card a {
+  color: darkslategrey;
+}
+
+.header {
+  width: 100vw;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #3d4cbc;
+  color: white;
+  text-align: left;
+  padding-left: 20px;
+}
+
+.header h1 {
+  color: white;
+  text-decoration: none;
+  font-style: none;
+}
+
+.header a {
+  text-decoration: none;
+}
+
+.home-container h1 {
+  color: #3d4cbc;
+  margin-bottom: 100px;
+}
+
+.home-container p {
+  width: 600px;
+  margin: 0 auto;
+  margin-bottom: 40px;
+}
+
+.home-container button {
+  margin: 50px 20px 0 20px;
+}
+
+.subtext {
+  color: darkslategrey;
+}

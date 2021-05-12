@@ -1,0 +1,139 @@
+import React, { useRef, useEffect, useCallback } from 'react';
+import ReactModal from 'react-modal';
+import { useHistory } from "react-router-dom";
+import styled from 'styled-components';
+import { MdClose } from 'react-icons/md';
+
+
+ReactModal.setAppElement('#root');
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    width: '50%',
+    border: '1px solid #28547a',
+    borderRadius: '4px'
+  }
+};
+
+const Background = styled.div`
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ModalWrapper = styled.div`
+  width: 800px;
+  height: 500px;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  color: #000;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  z-index: 10;
+  border-radius: 10px;
+`;
+
+const ModalContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  line-height: 1.8;
+  color: #141414;
+  p {
+    margin-bottom: 1rem;
+  }
+  button {
+    padding: 10px 24px;
+    background: #141414;
+    color: #fff;
+    border: none;
+  }
+`;
+
+const CloseModalButton = styled(MdClose)`
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  z-index: 10;
+`;
+
+
+ function ScheduleModal ({showScheduleModal, setScheduleModal, city, stateLoc}) {
+  const modalRef = useRef();
+  const history = useHistory();
+
+  const routeChange = () =>{ 
+    let path = `/userhomepage`; 
+    history.push(path);
+  }
+  // const animation = useSpring({
+  //   config: {
+  //     duration: 10000
+  //   },
+  //   opacity: showScheduleModal ? 1 : 0,
+  //   transform: showScheduleModal ? `translateY(0%)` : `translateY(-100%)`
+  // });
+  const closeModal = e => {
+    if (modalRef.current === e.target) {
+      setScheduleModal(false);
+    }
+  };
+  const keyPress = useCallback(
+    e => {
+      if (e.key === 'Escape' && showScheduleModal) {
+        setScheduleModal(false);
+        console.log('I pressed');
+      }
+    },
+    [setScheduleModal, showScheduleModal]
+  );
+  useEffect(
+    () => {
+      document.addEventListener('keydown', keyPress);
+      return () => document.removeEventListener('keydown', keyPress);
+    },
+    [keyPress]
+  );
+  return (
+    <>
+    
+    {showScheduleModal ? (
+      <ReactModal 
+      name="scheduleModal"
+      isOpen={showScheduleModal}
+      contentLabel="Appointment Sch"
+      style={customStyles}>
+        
+            <h1>You have successfully booked <br />
+           an appointment at </h1>
+           <p>{city}, {stateLoc}</p>
+                <button onClick={routeChange}>Return to Homepage</button>
+              
+              <CloseModalButton
+                aria-label='Close modal'
+                onClick={() => setScheduleModal(prev => !prev)}
+              />
+        
+        </ReactModal>
+    ): null }
+    
+    </>
+  )
+}
+
+export default ScheduleModal ;
