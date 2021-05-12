@@ -1,24 +1,31 @@
 import React, { useState } from "react";
 import Header from "./Header";
 import { TextField, Button } from "@material-ui/core";
+import { ChangeEvent } from "react";
+import SocialSignIn from "./doSocialSignIn";
+import { doSignInWithEmailAndPassword } from "../firebase/firebaseFunctions";
+import { useHistory } from "react-router-dom";
 
-const Login = ({ admin }) => {
+const Login = (props: { admin: Boolean }) => {
+  const history = useHistory();
   const [error, setError] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const usernameHandler = (event) => {
+  const usernameHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
   };
 
-  const passwordHandler = (event) => {
+  const passwordHandler = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
   };
 
   return (
     <div>
       <Header />
-      <h1 className="title">Login as {admin == true ? "Admin" : "User"}</h1>
+      <h1 className="title">
+        Login as User
+      </h1>
       <div className="form-card">
         <TextField
           variant="filled"
@@ -39,9 +46,18 @@ const Login = ({ admin }) => {
         <br />
         <br />
         <p>{error}</p>
-        <Button variant="contained" color="primary">
+        <Button
+          onClick={(e) => {
+            e.preventDefault();
+            doSignInWithEmailAndPassword(username, password);
+            history.push("/userhomepage");
+          }}
+          variant="contained"
+          color="primary"
+        >
           Submit
         </Button>
+        <SocialSignIn />
         <br />
         <br />
         <p>

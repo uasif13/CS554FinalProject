@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../firebaseServer";
+import { db } from "../firebase/firebaseServer";
 import {
   Table,
   TableBody,
@@ -12,6 +12,7 @@ import {
   Button,
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
+import SignOutButton from "./SignOut";
 
 const useStyles = makeStyles({
   table: {
