@@ -2,7 +2,7 @@ import { SERVER_ADDRESS } from "./constants";
 import axios from "axios";
 
 
-async function sendOneMessage(reciever: string, message: string) {
+export async function sendOneMessage(reciever: string, message: string) {
     let res;
     res = await axios(
         {
@@ -19,8 +19,4 @@ async function sendOneMessage(reciever: string, message: string) {
         console.log("failure");
         return -1;
     });
-}
-
-module.exports = {
-    sendOneMessage,
 }
