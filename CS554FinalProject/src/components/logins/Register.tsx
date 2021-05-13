@@ -1,9 +1,8 @@
-import { Button, TextField, FormControl } from "@material-ui/core";
+import { Button, TextField } from "@material-ui/core";
 import React, { useState, ChangeEvent } from "react";
-import "./components.css";
-import Header from "./Header";
-import { doCreateUserWithEmailandPassword } from "../firebase/firebaseFunctions";
-import SocialSignIn from "./doSocialSignIn";
+import Header from "../Header";
+import { doCreateUserWithEmailandPassword } from "../../firebase/firebaseFunctions";
+import SocialSignIn from "../doSocialSignIn";
 import { useHistory } from "react-router-dom";
 
 function Register() {
@@ -32,9 +31,9 @@ function Register() {
 	}
 	else{
 		let response = await doCreateUserWithEmailandPassword(email, password, username);
-
-		if (response === "auth/email-already-in-use"){
-			setError("The email address is already in use by another account.")
+		console.log(response);
+		if (response){
+			setError(response.message);
 		}else{
 			history.push("/profile");
 		}

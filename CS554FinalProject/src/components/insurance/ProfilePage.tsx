@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'; 
 import { FormControl,FormControlLabel, RadioGroup, Radio } from '@material-ui/core'; 
-import ScanInsurance from '../components/insurance/ScanInsurance';
-import ManualInsurance from '../components/insurance/ManualInsurance';
+import ScanInsurance from './ScanInsurance';
+import ManualInsurance from './ManualInsurance';
 
 function ProfilePage() {
     const [radioButton, setRadioButton] = useState("scan");

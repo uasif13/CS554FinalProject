@@ -1,14 +1,15 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Home from "./components/Home";
-import Login from "./components/Login";
-import LoginAdmin from "./components/LoginAdmin";
-import Register from "./components/Register";
+import Login from "./components/logins/Login";
+import LoginAdmin from "./components/logins/LoginAdmin";
+import Register from "./components/logins/Register";
 import UserHomePage from "./components/UserHomePage";
 import AdminHomePage from "./components/AdminHomePage";
-import ProfilePage from "./components/ProfilePage";
+import ProfilePage from "./components/insurance/ProfilePage";
 import Schedule from "./components/Schedule";
 import NotFound from "./components/NotFound";
+import Reset from "./components/logins/Reset";
 
 function App() {
   return (
@@ -27,7 +28,8 @@ function App() {
           <Route exact path="/profile" component={ProfilePage} />
           <Route exact path="/schedule" component={Schedule} />
           <Route exact path="/adminhomepage" component={AdminHomePage} />
-          <Route exact path="*" component={NotFound} />
+		  <Route exact path="/reset" component={Reset} />
+		  <Route exact path="*" component={NotFound} />
         </Switch>
       </div>
     </Router>
