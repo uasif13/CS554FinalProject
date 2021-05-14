@@ -67,7 +67,7 @@ const Schedule = () => {
   const [time, setTime] = useState<Array<number>>();
   const [showScheduleModal, setScheduleModal]= useState<boolean>(false);
   const [data, setData] = useState<{ [key: string]: [times: number] }>();
-
+  const [selectedTime, setSelectedTime] = useState<number>();
   useEffect(() => {
     async function fetchData() {
       try {
@@ -115,35 +115,13 @@ const Schedule = () => {
     state.val.appointmentsForLocation,
   ]);
 
-  const showTimes = (times: any) => {
-    setTime(times);
+  const showTimes =  (times: any) => {
+   setTime(times);
   };
   const openModal = () =>{
     setScheduleModal(prev => !prev);
 }
-const chooseAppointment = () =>{
-    console.log("User Chose Appointment. Push to Firebase"); 
-    // TODO: Connect to firebase, {need user to be logged in}
-    //Open the modal
-    // handleOpenScheduleModal(city,stateLoc,street, zip, date)
-    openModal();
-}
 
-  const buildTimes = (times: any, index: number) => {
-    return (
-      <div key={index}>
-        <Button
-          variant="contained"
-          className={classes.button}
-          key={index}
-          onClick={chooseAppointment}
-        >
-          {times > 12 ? times - 12 + ":00 pm" : times + ":00 am"}
-        </Button>
-        
-      </div>
-    );
-  };
 
   const buildButtons = (buttons: any, times: any) => {
     return (
@@ -157,6 +135,33 @@ const chooseAppointment = () =>{
         >
           {buttons.slice(0, 10)}
         </Button>
+      </div>
+    );
+  };
+  const chooseAppointment = (times:any) =>{
+    console.log("User Chose Appointment. Push to Firebase"); 
+    // TODO: Connect to firebase, {need user to be logged in}
+    //Open the modal
+    // handleOpenScheduleModal(city,stateLoc,street, zip, date)
+    setSelectedTime(times);
+   // console.log("Time selected is: ", times);
+    openModal();
+}
+  const buildTimes = (times: any, index: number) => {
+   
+    return (
+      <div key={index}>
+        <Button
+          variant="contained"
+          className={classes.button}
+          key={index}
+          onClick={() => { 
+            chooseAppointment(times);
+          }}       
+           >
+          {times > 12 ? times - 12 + ":00 pm" : times + ":00 am"}
+        </Button>
+        
       </div>
     );
   };
@@ -193,7 +198,7 @@ const chooseAppointment = () =>{
             : "No Times Available"}
         </div>
        
-        <ScheduleModal showScheduleModal={showScheduleModal} setScheduleModal={setScheduleModal} city={city} stateLoc={stateLoc}/>
+        <ScheduleModal showScheduleModal={showScheduleModal} setScheduleModal={setScheduleModal} city={city} stateLoc={stateLoc} time={selectedTime}/>
         <GlobalStyle />
        
         
