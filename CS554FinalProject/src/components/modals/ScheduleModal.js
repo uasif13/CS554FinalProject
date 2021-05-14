@@ -61,16 +61,16 @@ const ModalContent = styled.div`
   }
 `;
 
-const CloseModalButton = styled(MdClose)`
-  cursor: pointer;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  z-index: 10;
-`;
+// const CloseModalButton = styled(MdClose)`
+//   cursor: pointer;
+//   position: absolute;
+//   top: 20px;
+//   right: 20px;
+//   width: 32px;
+//   height: 32px;
+//   padding: 0;
+//   z-index: 10;
+// `;
 
 
  function ScheduleModal ({showScheduleModal, setScheduleModal, city, stateLoc, time}) {
@@ -125,12 +125,6 @@ const CloseModalButton = styled(MdClose)`
            <br />
            <p>at {time}{str}</p>
                 <button onClick={routeChange}>Return to Homepage</button>
-              
-              <CloseModalButton
-                aria-label='Close modal'
-                onClick={() => setScheduleModal(prev => !prev)}
-              />
-        
         </ReactModal>
     ): null }
     
