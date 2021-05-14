@@ -13,6 +13,7 @@ import {
   makeStyles,
   Button,
 } from "@material-ui/core";
+import Header from "./Header";
 
 const useStyles = makeStyles({
   table: {
@@ -120,6 +121,7 @@ function AdminHomePage() {
 
   return (
     <div>
+      <Header doesGoToProfile={false} doesGoToScheduler={false}/>
       <h1>Covid Scheduler</h1>
       <p>Admin Home Page</p>
       <TableContainer component={Paper}>

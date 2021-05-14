@@ -22,7 +22,7 @@ const Login = (props: { admin: Boolean }) => {
 
   return (
     <div>
-      <Header />
+      <Header doesGoToProfile={false} doesGoToScheduler={false}/>
       <h1 className="title">
         Login as User
       </h1>

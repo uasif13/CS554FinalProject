@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import SignOutButton from "./SignOut";
+import Header from "./Header";
 
 const useStyles = makeStyles({
   table: {
@@ -114,6 +115,7 @@ function UserHomePage() {
 
   return (
     <div>
+      <Header doesGoToProfile={true} doesGoToScheduler={false}/>
       <h1>Covid Scheduler</h1>
       <p>User Home Page</p>
       <TableContainer component={Paper}>

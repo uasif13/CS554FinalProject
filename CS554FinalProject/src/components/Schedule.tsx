@@ -5,6 +5,9 @@ import { db } from "../firebase/firebaseServer";
 import ScheduleModal from './modals/ScheduleModal';
 import styled from 'styled-components';
 import { GlobalStyle } from '.././globalStyles';
+import {sendOneMessage} from "../messaging/message";
+import {getCurrUserData} from "../firebase/firebaseFunctions";
+
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -21,9 +24,13 @@ const useStyles = makeStyles({
     color: "white",
     margin: "10px",
   },
-
+  backButton: {
+    position: "absolute",
+    top: "20px",
+    left: "20px",
+  },
   address: {
-    textAlign: "left",
+    textAlign: "center",
   },
   chooseDate: {
     width: "25ch",
@@ -121,12 +128,15 @@ const Schedule = () => {
   const openModal = () =>{
     setScheduleModal(prev => !prev);
 }
-const chooseAppointment = () =>{
+async function chooseAppointment(time2: string) {
     console.log("User Chose Appointment. Push to Firebase"); 
     // TODO: Connect to firebase, {need user to be logged in}
     //Open the modal
     // handleOpenScheduleModal(city,stateLoc,street, zip, date)
     openModal();
+    let data: any = await getCurrUserData();
+    // await sendOneMessage(data.phoneNum, `Your appointment has been booked for [date] at ${time2}:00 at ${street}, ${city}, ${stateLoc}.`);
+  await sendOneMessage("+16094393429", "It's dan");
 }
 
   const buildTimes = (times: any, index: number) => {
@@ -136,7 +146,7 @@ const chooseAppointment = () =>{
           variant="contained"
           className={classes.button}
           key={index}
-          onClick={chooseAppointment}
+          onClick={() => {chooseAppointment(times)}}
         >
           {times > 12 ? times - 12 + ":00 pm" : times + ":00 am"}
         </Button>
@@ -165,6 +175,7 @@ const chooseAppointment = () =>{
     return (
       <div>
         <div className={classes.address}>
+          <a href="/userhomepage"><Button className={classes.backButton} variant="contained" color="secondary">Go Back</Button></a>
           <h1>
             Location: {city}, {stateLoc}
           </h1>
