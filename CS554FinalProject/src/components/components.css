@@ -41,6 +41,21 @@
   color: white;
   text-decoration: none;
   font-style: none;
+  display: inline-block;
+}
+
+.header button {
+  float: right;
+  margin: 25px 50px 0 0;
+  background-color: lightblue;
+  color: black;
+}
+
+.header button:hover {
+  float: right;
+  margin: 25px 50px 0 0;
+  background-color: lightskyblue;
+  color: black;
 }
 
 .header a {
@@ -64,4 +79,17 @@
 
 .subtext {
   color: darkslategrey;
+}
+
+.phoneInfo {
+  width: 400px;
+  margin: 0 auto;
+  box-shadow: 3px 3px 13px lightgray;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.phoneInfo input {
+  width: 300px;
 }

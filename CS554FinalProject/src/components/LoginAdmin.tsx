@@ -48,8 +48,10 @@ const LoginAdmin = (props: { admin: Boolean }) => {
   }
   return (
     <div>
-      <Header />
-      <h1 className="title">Login as Admin</h1>
+      <Header doesGoToProfile={false} doesGoToScheduler={false}/>
+      <h1 className="title">
+        Login as Admin
+      </h1>
       <div className="form-card">
         <TextField
           variant="filled"

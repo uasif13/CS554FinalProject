@@ -13,6 +13,7 @@ import {
   makeStyles,
   Button,
 } from "@material-ui/core";
+import Header from "./Header";
 import SignOutButton from "./SignOut";
 
 const useStyles = makeStyles({
@@ -127,6 +128,7 @@ function AdminHomePage() {
 
   return (
     <div>
+      <Header doesGoToProfile={false} doesGoToScheduler={false}/>
       <SignOutButton />
       <h1>Covid Scheduler</h1>
       <p>Admin Home Page</p>

@@ -50,7 +50,7 @@ const Login = (props: { admin: Boolean }) => {
   } else {
     return (
       <div>
-        <Header />
+      <Header doesGoToProfile={false} doesGoToScheduler={false}/>	
         <h1 className="title">Login as User</h1>
         <div className="form-card">
           <TextField
