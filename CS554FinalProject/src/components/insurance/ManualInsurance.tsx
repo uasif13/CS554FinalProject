@@ -1,7 +1,11 @@
-import React, {useEffect, useState} from 'react'; 
+import React, { useEffect, useState, useContext } from "react";
 import { makeStyles, Button, TextField} from '@material-ui/core'; 
 import { ChangeEvent } from "react";
 import { useHistory } from "react-router-dom";
+import { AuthContext } from "../../firebase/firebaseAuth";
+import { db } from "../../firebase/firebaseServer";
+import {updateInsurance} from '../../firebase/firebaseFunctions';
+
 const useStyles = makeStyles({
     table: {
       minWidth: 650,
@@ -22,12 +26,20 @@ const useStyles = makeStyles({
     },
 });
 
+interface UpdateObject {
+	[key: string]: any;
+  }
+
 const ManualInsurance = () => {
     const classes = useStyles();
 	const [error, setError] = useState("");
 	const [memberID, setMemberID] = useState("");
 	const [groupID, setGroupID] = useState("");
 	const history = useHistory();
+
+	const { currentUser } = useContext(AuthContext);
+	const [updates, setUpdates] = useState<UpdateObject>({});
+
 
     useEffect(() =>{
         console.log('mounted'); 
@@ -41,15 +53,29 @@ const ManualInsurance = () => {
 		setGroupID(event.target.value);
 	};
 
-	const handleSubmit = () =>{
+
+	const handleSubmit = async () =>{
 		if (memberID.trim().length === 0){
 			setError("Member ID Required");
 		}
 		else if (groupID.trim().length === 0){
 			setError("Group ID Required")
 		}else{
-			setError("")
-			history.push("/user");
+			if(currentUser){
+				console.log(currentUser.email);
+				let response = await updateInsurance(currentUser.email, memberID, groupID);
+
+				if (response){
+					console.log("error");
+					setError(response.message);
+				}else{
+					console.log("Sucessfully Updated Insurance")
+					setError("")
+					history.push("/user");
+				}
+			}
+
+
 		}
 	}
     return(

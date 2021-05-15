@@ -168,6 +168,41 @@ async function getCurrUserData() {
   });
 
   return data;
+};
+
+
+
+async function updateInsurance(email: string, memberID: string, groupID: string){
+
+	try{
+		let foundID: any;
+		await db.ref().child("Users").on("value", async(snapshot) =>{
+			snapshot.forEach((snap) => {
+				let id = snap.key;
+				let val = snap.val();
+				if (val.email === email){
+					console.log("We Found Email", val.email)
+					foundID = id;
+					
+				}	
+				return foundID;
+			});
+			if (foundID === undefined){
+				throw Error("ID not found")
+			}else{
+				await db.ref('Users/' + foundID).update({
+					insurance: {
+						group_number: groupID,
+						id: memberID
+					}
+				});
+			}
+
+		})
+	}catch(e){
+		console.log(e);
+		return e 
+	}
 }
 
 export {
@@ -182,4 +217,5 @@ export {
   doUpdateUserPhoneAndDist,
   getCurrUserData,
   createUserData,
+  updateInsurance, 
 };
