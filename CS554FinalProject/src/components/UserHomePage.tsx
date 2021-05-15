@@ -53,9 +53,6 @@ function UserHomePage() {
   useEffect(() => {
     function fetchData() {
       try {
-        db.ref("Locations")
-          .once("value")
-          .then((snapshot) => console.log("snapshot", snapshot));
         db.ref()
           .child("Locations")
           .on("value", (snapshot) => {

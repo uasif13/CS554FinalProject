@@ -1,5 +1,5 @@
 import firebase from "firebase";
-import {db} from "./firebaseServer";
+import { db } from "./firebaseServer";
 import { sendOneMessage } from "../messaging/message";
 
 async function doCreateUserWithEmailandPassword(
@@ -9,7 +9,9 @@ async function doCreateUserWithEmailandPassword(
 ) {
   try {
     await firebase.auth().createUserWithEmailAndPassword(email, password);
-    await firebase.auth().currentUser?.updateProfile({ displayName: displayName });
+    await firebase
+      .auth()
+      .currentUser?.updateProfile({ displayName: displayName });
   } catch (e) {
     console.log(e);
     return e;
@@ -31,13 +33,13 @@ async function doChangePassword(
 }
 
 async function doSignInWithEmailAndPassword(email: string, password: string) {
-	try{
-		  await firebase.auth().signInWithEmailAndPassword(email, password);
-	}catch(e){
-		  console.log(e); 
-		  return e
-	}
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+  } catch (e) {
+    console.log(e);
+    return e;
   }
+}
 
 async function doSocialSignIn(provider: string) {
   let socialProvider = null;
@@ -51,13 +53,12 @@ async function doSocialSignIn(provider: string) {
 }
 
 async function doPasswordReset(email: string) {
-	try{
-		await firebase.auth().sendPasswordResetEmail(email);
-	}catch(e){
-		console.log(e);
-		return e
-	}
-
+  try {
+    await firebase.auth().sendPasswordResetEmail(email);
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
 }
 
 async function doSignOut() {
@@ -83,33 +84,35 @@ async function createUserData(email: string, password: string, name: string) {
       provider: "",
     },
     isAdmin: false,
-    lastName: "Asif Uddin",
+    lastName: name,
     phoneNumber: 1234567890,
     password: password,
     rabbitMQ: false,
   });
-  console.log(newUserRef);
 }
 
 async function doIncrementVaccines(location: object) {}
 
 async function doDecrementVaccines(location: object) {}
 
-async function doUpdateUserPhoneAndDist(phoneNum: string, dist: string, optIn: boolean) {
+async function doUpdateUserPhoneAndDist(
+  phoneNum: string,
+  dist: string,
+  optIn: boolean
+) {
   try {
-
     let uid = await firebase.auth().currentUser?.uid;
     if (uid == null) {
-      return {status: 500, message: "user not logged in"};
+      return { status: 500, message: "user not logged in" };
     }
 
     let data: any = {};
     await db.ref("Users/" + uid).on("value", (snap) => {
       data = snap.val();
-    })
+    });
 
     if (data == {}) {
-      return {status: 500, message: "no user found in db with that id"};
+      return { status: 500, message: "no user found in db with that id" };
     }
 
     let obj = {
@@ -130,8 +133,8 @@ async function doUpdateUserPhoneAndDist(phoneNum: string, dist: string, optIn: b
       isAdmin: data.isAdmin,
       lastName: data.lastName,
       phoneNumber: phoneNum,
-      rabbitMQ: optIn
-    }
+      rabbitMQ: optIn,
+    };
 
     let newPostKey = db.ref().child("Users").push().key;
     let updates: any = {};
@@ -140,32 +143,32 @@ async function doUpdateUserPhoneAndDist(phoneNum: string, dist: string, optIn: b
 
     await db.ref().update(updates);
   } catch (e) {
-    return {status: 500, message:e.message};
+    return { status: 500, message: e.message };
   }
 
   if (optIn == true) {
-    await sendOneMessage(phoneNum, "Vaccine Scheduler: Congrats! You have successfuly opted in for text messaging. We will update you if vaccines become available in your area.");
+    await sendOneMessage(
+      phoneNum,
+      "Vaccine Scheduler: Congrats! You have successfuly opted in for text messaging. We will update you if vaccines become available in your area."
+    );
   }
 
-  return {status: 200, message: "success"};
-
+  return { status: 200, message: "success" };
 }
 
 async function getCurrUserData() {
   let uid = await firebase.auth().currentUser?.uid;
-    if (uid == null) {
-      return {status: 500, message: "user not logged in"};
-    }
+  if (uid == null) {
+    return { status: 500, message: "user not logged in" };
+  }
 
-    let data: any = {};
-    await db.ref("Users/" + uid).on("value", (snap) => {
-      data = snap.val();
-    });
+  let data: any = {};
+  await db.ref("Users/" + uid).on("value", (snap) => {
+    data = snap.val();
+  });
 
-    return data;
-
+  return data;
 }
-
 
 export {
   doCreateUserWithEmailandPassword,
