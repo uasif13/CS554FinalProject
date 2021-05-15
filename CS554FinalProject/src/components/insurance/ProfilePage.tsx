@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'; 
-import { FormControl,FormControlLabel, RadioGroup, Radio, Divider, TextField, Checkbox, Button, CircularProgress } from '@material-ui/core'; 
+import { FormControl,FormControlLabel, RadioGroup, Radio, TextField, Checkbox, Button, CircularProgress } from '@material-ui/core'; 
 import ScanInsurance from './ScanInsurance'
 import ManualInsurance from './ManualInsurance';
 import Header from '../Header'
@@ -58,7 +58,7 @@ function ProfilePage() {
             let res: any = await doUpdateUserPhoneAndDist(phoneNum, distance, optText);
             console.log(res)
 
-            if (res.status == 500) {
+            if (res.status === 500) {
                 setError(res.message);
                 setLoading2(false);
                 return;
@@ -83,21 +83,22 @@ function ProfilePage() {
     }else{
         return(
             <div>
+				<div className="profileHeader">
                 <Header doesGoToProfile={false} doesGoToScheduler={true}/>
                 <h1>User Details</h1>
-    
+				</div>
+
+				<div>
                 <FormControl component="fieldset">
                 <h2>Scan Insurance Card or Input Manually</h2>
-                    <RadioGroup aria-label="typeScan" name="typeScan" value={radioButton} onChange={handleRadioButtons}>
+                    <RadioGroup aria-label="typeScan" name="typeScan" row value={radioButton} onChange={handleRadioButtons}>
                         <FormControlLabel value="scan" control={<Radio />} label="Scan" />
                         <FormControlLabel value="manual" control={<Radio />} label="Manual" />
                     </RadioGroup>
                 </FormControl>
-                
-                {(radioButton && radioButton === "scan") ? 
-                    <ScanInsurance/> : 
-                    <ManualInsurance/>}
-                <Divider />
+                <div className="form-card-lg">
+
+
                 <div className="phoneInfo">
                     <h1>Contact Information</h1>
                     <TextField variant="filled" onChange={handlePhoneChange} id="phone-num" required label="Phone Number (No '-' or '+'):" />
@@ -109,12 +110,18 @@ function ProfilePage() {
                         label="Opt in for text messages?"
                     />
                     <br />
-                    {error}
+                    <p className="errors">{error}</p>
                     <br />
                     <br />
                     {!loading2 ? <Button variant="contained" onClick={submit} color="primary">Save</Button> : <CircularProgress />}
                 </div>
-                
+
+				{(radioButton && radioButton === "scan") ? 
+                    <ScanInsurance/> : 
+                    <ManualInsurance/>}
+
+                </div>
+				</div>
             </div>
         );
     }

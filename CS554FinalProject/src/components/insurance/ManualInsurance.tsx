@@ -49,11 +49,11 @@ const ManualInsurance = () => {
 			setError("Group ID Required")
 		}else{
 			setError("")
-			history.push("/userhomepage");
+			history.push("/user");
 		}
 	}
     return(
-        <div>
+        <div className="form-card-sm">
             <h1> Manual Scan</h1>
             <section className="memberID">
                 <div>
