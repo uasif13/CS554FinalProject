@@ -157,17 +157,30 @@ async function doUpdateUserPhoneAndDist(
 }
 
 async function getCurrUserData() {
-  let uid = await firebase.auth().currentUser?.uid;
-  if (uid == null) {
+  let email = await firebase.auth().currentUser?.email;
+  if (email == null) {
     return { status: 500, message: "user not logged in" };
   }
-
-  let data: any = {};
-  await db.ref("Users/" + uid).on("value", (snap) => {
-    data = snap.val();
-  });
-
-  return data;
+  try{
+    var dataArray: any[] = [];
+		await db.ref().child("Users").on("value", (snapshot) =>{
+			snapshot.forEach((snap) => {
+				let id = snap.key;
+				let val = snap.val();
+				if (val.email === email){
+					console.log("found email", val.email)
+          dataArray.push(val);
+				}
+			});
+      //console.log(dataArray[0])
+		})
+    console.log(dataArray);
+    console.log(dataArray[0]);
+    return dataArray;
+	}catch(e){
+		console.log(e);
+		return e
+	}
 }
 
 export {

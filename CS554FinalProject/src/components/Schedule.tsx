@@ -149,7 +149,7 @@ const Schedule = () => {
 
 
   const chooseAppointment = async (times:any) => {
-    console.log("User Chose Appointment. Push to Firebase"); 
+    console.log("User Chose Appointment. Push to Firebase");
     // TODO: Connect to firebase, {need user to be logged in}
     //Open the modal
     // handleOpenScheduleModal(city,stateLoc,street, zip, date)
@@ -157,11 +157,12 @@ const Schedule = () => {
    // console.log("Time selected is: ", times);
     openModal();
     let data: any = await getCurrUserData();
-    await sendOneMessage(data.phoneNum, `Your appointment has been booked for [date] at ${times}:00 at ${street}, ${city}, ${stateLoc}.`);
+    console.log(data);
+    await sendOneMessage(data.phoneNumber, `Your appointment has been booked for [date] at ${times}:00 at ${street}, ${city}, ${stateLoc}.`);
   }
 
   const buildTimes = (times: any, index: number) => {
-   
+
     return (
       <div key={index}>
         <Button
@@ -172,7 +173,7 @@ const Schedule = () => {
         >
           {times > 12 ? times - 12 + ":00 pm" : times + ":00 am"}
         </Button>
-        
+
       </div>
     );
   };
@@ -209,11 +210,11 @@ const Schedule = () => {
               })
             : "No Times Available"}
         </div>
-       
+
         <ScheduleModal showScheduleModal={showScheduleModal} setScheduleModal={setScheduleModal} city={city} stateLoc={stateLoc} time={selectedTime}/>
         <GlobalStyle />
-       
-        
+
+
       </div>
     );
   } else {
