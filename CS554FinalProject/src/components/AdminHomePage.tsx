@@ -94,6 +94,7 @@ function AdminHomePage() {
     }
     console.log(vaccineCount);
   await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
+  window.location.reload(true);
    };
    const doIncrementVaccines = async (currLoc: any) => {
     console.log(currLoc);
@@ -103,7 +104,7 @@ function AdminHomePage() {
     
     console.log(vaccineCount);
     await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
-  
+    window.location.reload(true);
    };
   const buildCard = (currLoc: any, index: number) => {
     return (
@@ -191,3 +192,4 @@ function AdminHomePage() {
 }
 
 export default AdminHomePage;
+
