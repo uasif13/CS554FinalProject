@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react'; 
 import { FormControl,FormControlLabel, RadioGroup, Radio, Divider, TextField, Checkbox, Button, CircularProgress } from '@material-ui/core'; 
-import ScanInsurance from '../components/insurance/ScanInsurance';
-import ManualInsurance from '../components/insurance/ManualInsurance';
-import Header from "../components/Header";
-import "./components.css";
-import {doUpdateUserPhoneAndDist} from "../firebase/firebaseFunctions";
+import ScanInsurance from './ScanInsurance'
+import ManualInsurance from './ManualInsurance';
+import Header from '../Header'
+import "../components.css";
+import {doUpdateUserPhoneAndDist} from "../../firebase/firebaseFunctions";
 
 function ProfilePage() {
     const [radioButton, setRadioButton] = useState("scan");

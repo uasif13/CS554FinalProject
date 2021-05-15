@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { auth, db } from "../firebase/firebaseServer";
+import {db } from "../firebase/firebaseServer";
 import { doIncrementVaccines } from "../firebase/firebaseFunctions";
 import { doDecrementVaccines } from "../firebase/firebaseFunctions";
 import {
@@ -64,6 +64,7 @@ function AdminHomePage() {
       }
     }
     fetchData();
+	 // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const buildCard = (currLoc: any, index: number) => {

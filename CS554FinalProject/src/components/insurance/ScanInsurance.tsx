@@ -37,10 +37,8 @@ const useStyles = makeStyles({
 
 const ScanInsurance =() =>{
     const classes = useStyles();
-
     const [upload, setUpload] = useState(""); 
     const [extractedText, setExtractedText] = useState<Array<String>>([]);
-    
     const [error, setError] = useState(false); 
     const [userUpload, setUserUpload] = useState(true); 
     const [progress, setProgress] = useState(false);
@@ -101,9 +99,8 @@ const ScanInsurance =() =>{
                 { logger: m => console.log(m) }
               ).then(({ data: { text } }) => {
 
-                    let cleanedText = text.replace(/\n/g,' ').split(' ');
+                    let cleanedText = text.replace(/[-\\n/\\^$*+%?.()|[\]{}\n]/g, ' ').split(' ');
                     cleanedText = cleanedText.filter( word => (word !== "" && /\d/.test(word)));
-
                     setExtractedText(cleanedText);
                     setProgress(false);
                     setFinished(true); 
@@ -126,6 +123,7 @@ const ScanInsurance =() =>{
 
     const pushToFireBase = () =>{
         console.log("Push to firebase")
+
         setReset(true); 
         // TODO: call to firebase to upload member id (need user to be logged in)
         // TODO: call to firebase to upload group number (need user to be logged in)
@@ -163,7 +161,9 @@ const ScanInsurance =() =>{
     return(
         <div>
             <h1>Scan Insurance Card</h1>
+
             <div className="form-card">
+			<p>Please upload a bright image</p>
             <div className={classes.fileUploader}>
             <Button
                 variant="contained"
@@ -215,7 +215,7 @@ const ScanInsurance =() =>{
                                         value={memberID} 
                                         disabled={!finished}
                                         aria-disabled="true"
-                                        label="MemberIDScan" />
+                                        label="Member ID" />
                                 </form>
                             </div>
                             {extractedText.map((text, index) =>{
@@ -235,7 +235,7 @@ const ScanInsurance =() =>{
                                     value={groupNum}
                                     disabled={!finished}
                                     aria-disabled="true"
-                                    label="GroupNumberScan" />
+                                    label="Group Number" />
                                 </form>
                             </div>
                             {extractedText.map((text, index) =>{

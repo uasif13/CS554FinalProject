@@ -12,7 +12,7 @@ async function doCreateUserWithEmailandPassword(
     await firebase.auth().currentUser?.updateProfile({ displayName: displayName });
   } catch (e) {
     console.log(e);
-    return e.code;
+    return e;
   }
 }
 
@@ -31,8 +31,13 @@ async function doChangePassword(
 }
 
 async function doSignInWithEmailAndPassword(email: string, password: string) {
-  await firebase.auth().signInWithEmailAndPassword(email, password);
-}
+	try{
+		  await firebase.auth().signInWithEmailAndPassword(email, password);
+	}catch(e){
+		  console.log(e); 
+		  return e
+	}
+  }
 
 async function doSocialSignIn(provider: string) {
   let socialProvider = null;
@@ -46,7 +51,13 @@ async function doSocialSignIn(provider: string) {
 }
 
 async function doPasswordReset(email: string) {
-  await firebase.auth().sendPasswordResetEmail(email);
+	try{
+		await firebase.auth().sendPasswordResetEmail(email);
+	}catch(e){
+		console.log(e);
+		return e
+	}
+
 }
 
 async function doSignOut() {
@@ -154,6 +165,7 @@ async function getCurrUserData() {
     return data;
 
 }
+
 
 export {
   doCreateUserWithEmailandPassword,
