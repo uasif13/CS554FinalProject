@@ -13,6 +13,7 @@ import {
   makeStyles,
   Button,
 } from "@material-ui/core";
+import SignOutButton from "./SignOut";
 
 const useStyles = makeStyles({
   table: {
@@ -77,11 +78,14 @@ function AdminHomePage() {
         </TableCell>
         <TableCell align="right">
           {currLoc.numVaccines ? (
-            <Button variant="contained" className={classes.button}
-            onClick={(e) => {
-              e.preventDefault();
-              doDecrementVaccines(currLoc);
-            }}>
+            <Button
+              variant="contained"
+              className={classes.button}
+              onClick={(e) => {
+                e.preventDefault();
+                doDecrementVaccines(currLoc);
+              }}
+            >
               Increase Vaccines by 1
             </Button>
           ) : (
@@ -90,11 +94,14 @@ function AdminHomePage() {
         </TableCell>
         <TableCell align="right">
           {currLoc.numVaccines ? (
-            <Button variant="contained" className={classes.button}
-            onClick={(e) => {
-              e.preventDefault();
-              doIncrementVaccines(currLoc);
-            }}>
+            <Button
+              variant="contained"
+              className={classes.button}
+              onClick={(e) => {
+                e.preventDefault();
+                doIncrementVaccines(currLoc);
+              }}
+            >
               Decrease Vaccines by 1
             </Button>
           ) : (
@@ -102,9 +109,9 @@ function AdminHomePage() {
           )}
         </TableCell>
         <TableCell align="right">
-            <Button variant="contained" color="secondary">
-              Send Alert
-            </Button>
+          <Button variant="contained" color="secondary">
+            Send Alert
+          </Button>
         </TableCell>
       </TableRow>
     );
@@ -120,6 +127,7 @@ function AdminHomePage() {
 
   return (
     <div>
+      <SignOutButton />
       <h1>Covid Scheduler</h1>
       <p>Admin Home Page</p>
       <TableContainer component={Paper}>
