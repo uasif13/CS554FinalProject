@@ -53,7 +53,8 @@ async function doSocialSignIn(provider: string) {
 }
 
 async function doUpdateVaccineCount(location: string, numVaccine: number) {
-  console.log('updating the vaccine count:')
+  console.log('updating the vaccine count:');
+  try{
     let foundID: any;
     // go through and find the specific email 
     await db.ref().child("Locations").on("value", (snapshot) =>{
@@ -65,15 +66,22 @@ async function doUpdateVaccineCount(location: string, numVaccine: number) {
           console.log(typeof id)
           foundID = id;
         }	
+        return foundID
       });
     })
     console.log(foundID);
+    if(foundID === undefined){
+      throw Error("ID not found")
+    }else{
     await db.ref('Locations/' + foundID).update({
       numVaccines: numVaccine
       }
-    );
-    return {status: 200, message: "success"};
-}
+    )};
+}catch(e)
+{
+  console.log(e);
+  return e 
+}}
   
 
 async function doPasswordReset(email: string) {
@@ -202,3 +210,4 @@ export {
   getCurrUserData,
   createUserData,
 };
+
