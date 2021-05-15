@@ -148,7 +148,7 @@ const Schedule = () => {
   };
 
 
-  const chooseAppointment = async (times:any) =>{
+  const chooseAppointment = async (times:any) => {
     console.log("User Chose Appointment. Push to Firebase"); 
     // TODO: Connect to firebase, {need user to be logged in}
     //Open the modal
@@ -157,9 +157,9 @@ const Schedule = () => {
    // console.log("Time selected is: ", times);
     openModal();
     let data: any = await getCurrUserData();
-    // await sendOneMessage(data.phoneNum, `Your appointment has been booked for [date] at ${time2}:00 at ${street}, ${city}, ${stateLoc}.`);
-  await sendOneMessage("+16094393429", "It's dan");
-}
+    await sendOneMessage(data.phoneNum, `Your appointment has been booked for [date] at ${times}:00 at ${street}, ${city}, ${stateLoc}.`);
+  }
+
   const buildTimes = (times: any, index: number) => {
    
     return (
