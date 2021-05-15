@@ -29,7 +29,7 @@ const Login = (props: { admin: Boolean }) => {
 			  setError(response.message);
 		  }
 		  else{
-			  history.push("/userhomepage");
+			  history.push("/user");
 		  }
 	  }
 	}
@@ -44,7 +44,7 @@ const Login = (props: { admin: Boolean }) => {
   
 	return (
 	  <div>
-		<Header />
+      <Header doesGoToProfile={false} doesGoToScheduler={false}/>	
 		<h1 className="title">
 		  Login as User
 		</h1>

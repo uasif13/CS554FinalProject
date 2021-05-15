@@ -1,10 +1,18 @@
 import React from "react";
 import { doSignOut } from "../firebase/firebaseFunctions";
+import { Button } from "@material-ui/core";
 
 const SignOutButton = () => {
-  <button type="button" onClick={doSignOut}>
-    Sign Out
-  </button>;
+  return (
+    <Button
+      type="button"
+      onClick={doSignOut}
+      variant="contained"
+      color="primary"
+    >
+      Sign Out
+    </Button>
+  );
 };
 
 export default SignOutButton;

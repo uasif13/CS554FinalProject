@@ -10,29 +10,34 @@ import ProfilePage from "./components/insurance/ProfilePage";
 import Schedule from "./components/Schedule";
 import NotFound from "./components/NotFound";
 import Reset from "./components/logins/Reset";
+import { AuthProvider } from "./firebase/firebaseAuth";
+import PrivateRoute from "./PrivateRoute";
+
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/login">
-            <Login admin={false} />
-          </Route>
-          <Route exact path="/login/admin">
-            <LoginAdmin admin={true} />
-          </Route>
-          <Route exact path="/register" component={Register} />
-          <Route exact path="/userhomepage" component={UserHomePage} />
-          <Route exact path="/profile" component={ProfilePage} />
-          <Route exact path="/schedule" component={Schedule} />
-          <Route exact path="/adminhomepage" component={AdminHomePage} />
-		  <Route exact path="/reset" component={Reset} />
-		  <Route exact path="*" component={NotFound} />
-        </Switch>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/login">
+              <Login admin={false} />
+            </Route>
+            <Route exact path="/login/admin">
+              <LoginAdmin admin={true} />
+            </Route>
+            <Route exact path="/register" component={Register} />
+            <PrivateRoute exact path="/user" component={UserHomePage} />
+            <PrivateRoute exact path="/profile" component={ProfilePage} />
+            <PrivateRoute exact path="/schedule" component={Schedule} />
+            <PrivateRoute exact path="/admin" component={AdminHomePage} />
+			<Route exact path="/reset" component={Reset} />
+            <Route exact path="*" component={NotFound} />
+          </Switch>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

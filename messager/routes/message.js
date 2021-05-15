@@ -5,6 +5,9 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   let dest = req.body.destination;
   let message = req.body.message;
+  dest = "+1" + dest;
+
+  console.log(dest, message);
 
   let plivo = require("plivo");
 
@@ -19,6 +22,7 @@ router.post("/", async (req, res) => {
       return res.status(200).json({ message: "success!" });
     })
     .catch((e) => {
+      console.log(e.message);
       return res.status(500).json({ error: e.message });
     });
 });

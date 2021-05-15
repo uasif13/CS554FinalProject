@@ -27,7 +27,7 @@ const LoginAdmin = (props: { admin: Boolean }) => {
 		  if (response){
 			  setError(response.message); 
 		  }else{
-		  history.push("/adminhomepage");
+		  history.push("/admin");
 		  }
 	  }
 	}
@@ -42,7 +42,7 @@ const LoginAdmin = (props: { admin: Boolean }) => {
   
 	return (
 	  <div>
-		<Header />
+      <Header doesGoToProfile={false} doesGoToScheduler={false}/>
 		<h1 className="title">
 		  Login as Admin
 		</h1>

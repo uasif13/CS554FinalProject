@@ -61,33 +61,33 @@ const ModalContent = styled.div`
   }
 `;
 
-const CloseModalButton = styled(MdClose)`
-  cursor: pointer;
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  z-index: 10;
-`;
+// const CloseModalButton = styled(MdClose)`
+//   cursor: pointer;
+//   position: absolute;
+//   top: 20px;
+//   right: 20px;
+//   width: 32px;
+//   height: 32px;
+//   padding: 0;
+//   z-index: 10;
+// `;
 
 
- function ScheduleModal ({showScheduleModal, setScheduleModal, city, stateLoc}) {
+ function ScheduleModal ({showScheduleModal, setScheduleModal, city, stateLoc, time}) {
   const modalRef = useRef();
   const history = useHistory();
+  let str= " : 00 am";
+  if(time > 12)
+  {
+    time=time - 12;
+    str=" : 00 pm"
+  }
 
-  const routeChange = () =>{ 
+    const routeChange = () =>{ 
     let path = `/userhomepage`; 
     history.push(path);
   }
-  // const animation = useSpring({
-  //   config: {
-  //     duration: 10000
-  //   },
-  //   opacity: showScheduleModal ? 1 : 0,
-  //   transform: showScheduleModal ? `translateY(0%)` : `translateY(-100%)`
-  // });
+  
   const closeModal = e => {
     if (modalRef.current === e.target) {
       setScheduleModal(false);
@@ -122,13 +122,9 @@ const CloseModalButton = styled(MdClose)`
             <h1>You have successfully booked <br />
            an appointment at </h1>
            <p>{city}, {stateLoc}</p>
+           <br />
+           <p>at {time}{str}</p>
                 <button onClick={routeChange}>Return to Homepage</button>
-              
-              <CloseModalButton
-                aria-label='Close modal'
-                onClick={() => setScheduleModal(prev => !prev)}
-              />
-        
         </ReactModal>
     ): null }
     
