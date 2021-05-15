@@ -52,14 +52,13 @@ let dummy = {
     rabbitMQ: false,
   },
 };
+
 const ScanInsurance = () => {
   const { currentUser } = useContext(AuthContext);
   const [updates, setUpdates] = useState<UpdateObject>({});
   const classes = useStyles();
-
   const [upload, setUpload] = useState("");
   const [extractedText, setExtractedText] = useState<Array<String>>([]);
-
   const [error, setError] = useState(false);
   const [userUpload, setUserUpload] = useState(true);
   const [progress, setProgress] = useState(false);
@@ -83,6 +82,11 @@ const ScanInsurance = () => {
     }
     fetchData();
   }, [reset]);
+
+  const handleSetMemberID = (memberID: string) => {
+    console.log("Handling Member ID", memberID);
+    setMemberID(memberID);
+  };
 
   const uploadImage = async (picture: any) => {
     console.log("Uploaded Image");
@@ -118,11 +122,12 @@ const ScanInsurance = () => {
       Tesseract.recognize(upload, "eng", {
         logger: (m) => console.log(m),
       }).then(({ data: { text } }) => {
-        let cleanedText = text.replace(/\n/g, " ").split(" ");
+        let cleanedText = text
+          .replace(/[-\\n/\\^$*+%?.()|[\]{}\n]/g, " ")
+          .split(" ");
         cleanedText = cleanedText.filter(
           (word) => word !== "" && /\d/.test(word)
         );
-
         setExtractedText(cleanedText);
         setProgress(false);
         setFinished(true);
@@ -130,10 +135,6 @@ const ScanInsurance = () => {
     } else {
       setError(true);
     }
-  };
-  const handleSetMemberID = (memberID: string) => {
-    console.log("Handling Member ID", memberID);
-    setMemberID(memberID);
   };
 
   const handleSetGroupNumber = (groupNum: string) => {
@@ -231,57 +232,142 @@ const ScanInsurance = () => {
         </div>
         <br />
         <div>
-          <Button
-            variant="contained"
-            className={classes.button}
-            onClick={extractInsuranceCard}
-            classes={{ disabled: classes.button }}
-            disabled={!userUpload || (finished && userUpload && !progress)}
-          >
-            Scan Card
-          </Button>
-          <br />
-          <div id="progress">
-            {!finished ? (
-              userUpload && progress ? (
-                <h6>
-                  ...please wait...
-                  <br />
-                  ...extracting text...
-                </h6>
-              ) : (
-                ""
-              )
-            ) : (
+          <h1>Scan Insurance Card</h1>
+
+          <div className="form-card">
+            <p>Please upload a bright image</p>
+            <div className={classes.fileUploader}>
+              <Button
+                variant="contained"
+                component="label"
+                className={classes.button}
+                disabled={userUpload}
+              >
+                Upload Card
+                <input
+                  type="file"
+                  id="fileUploader"
+                  accept="image/x-png,image/jpeg"
+                  hidden
+                  onChange={uploadImage}
+                />
+              </Button>
+            </div>
+            <br />
+            <div id="JIMPProgress">
+              {JIMPuploading ? "...uploading insurance card..." : ""}
+            </div>
+            <br />
+            <div>
+              <Button
+                variant="contained"
+                className={classes.button}
+                onClick={extractInsuranceCard}
+                classes={{ disabled: classes.button }}
+                disabled={!userUpload || (finished && userUpload && !progress)}
+              >
+                Scan Card
+              </Button>
+              <br />
+              <div id="progress">
+                {!finished ? (
+                  userUpload && progress ? (
+                    <h6>
+                      ...please wait...
+                      <br />
+                      ...extracting text...
+                    </h6>
+                  ) : (
+                    ""
+                  )
+                ) : (
+                  <div>
+                    <br />
+                    <h6>Completed</h6>
+                  </div>
+                )}
+              </div>
+              <hr />
               <div>
+                <section className="memberID">
+                  <div>
+                    <h2>What is your member ID? </h2>
+                    <div>
+                      <form
+                        className={classes.root}
+                        noValidate
+                        autoComplete="off"
+                      >
+                        <TextField
+                          id="standard-basicScanMI"
+                          required
+                          value={memberID}
+                          disabled={!finished}
+                          aria-disabled="true"
+                          label="Member ID"
+                        />
+                      </form>
+                    </div>
+                    {extractedText.map((text, index) => {
+                      let item = 1;
+                      return buildButtons(text, index, item);
+                    })}
+                  </div>
+                </section>
+
+                <section className="group plan">
+                  <div>
+                    <h2>What is your group number? </h2>
+                    <div>
+                      <form
+                        className={classes.root}
+                        noValidate
+                        autoComplete="off"
+                      >
+                        <TextField
+                          id="standard-basicGNScan"
+                          required
+                          value={groupNum}
+                          disabled={!finished}
+                          aria-disabled="true"
+                          label="Group Number"
+                        />
+                      </form>
+                    </div>
+                    {extractedText.map((text, index) => {
+                      let item = 2;
+                      return buildButtons(text, index, item);
+                    })}
+                  </div>
+                </section>
+              </div>
+              <br />
+              <br />
+              <div className={classes.buttonRows}>
+                <Button
+                  variant="contained"
+                  className={classes.button}
+                  disabled={!finished}
+                  onClick={clearStates}
+                >
+                  Reset
+                </Button>
                 <br />
-                <h6>Completed</h6>
+                <br />
+                <Button
+                  variant="contained"
+                  className={classes.button}
+                  disabled={!finished}
+                  onClick={pushToFireBase}
+                >
+                  Submit
+                </Button>
               </div>
-            )}
-          </div>
-          <hr />
-          <div>
-            <section className="memberID">
-              <div>
-                <h2>What is your member ID? </h2>
-                <div>
-                  <form className={classes.root} noValidate autoComplete="off">
-                    <TextField
-                      id="standard-basicScanMI"
-                      required
-                      value={memberID}
-                      disabled={!finished}
-                      aria-disabled="true"
-                      label="MemberIDScan"
-                    />
-                  </form>
-                </div>
-                {extractedText.map((text, index) => {
-                  let item = 1;
-                  return buildButtons(text, index, item);
-                })}
-              </div>
-            </section>
+              {extractedText.map((text, index) => {
+                let item = 1;
+                return buildButtons(text, index, item);
+              })}
+            </div>
 
             <section className="group plan">
               <div>

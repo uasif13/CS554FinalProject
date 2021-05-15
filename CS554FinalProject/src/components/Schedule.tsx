@@ -5,6 +5,9 @@ import { db } from "../firebase/firebaseServer";
 import ScheduleModal from './modals/ScheduleModal';
 import styled from 'styled-components';
 import { GlobalStyle } from '.././globalStyles';
+import {sendOneMessage} from "../messaging/message";
+import {getCurrUserData} from "../firebase/firebaseFunctions";
+
 const Container = styled.div`
   display: flex;
   justify-content: center;
@@ -21,9 +24,13 @@ const useStyles = makeStyles({
     color: "white",
     margin: "10px",
   },
-
+  backButton: {
+    position: "absolute",
+    top: "20px",
+    left: "20px",
+  },
   address: {
-    textAlign: "left",
+    textAlign: "center",
   },
   chooseDate: {
     width: "25ch",
@@ -123,6 +130,7 @@ const Schedule = () => {
 }
 
 
+
   const buildButtons = (buttons: any, times: any) => {
     return (
       <div key={times}>
@@ -138,7 +146,9 @@ const Schedule = () => {
       </div>
     );
   };
-  const chooseAppointment = (times:any) =>{
+
+
+  const chooseAppointment = async (times:any) => {
     console.log("User Chose Appointment. Push to Firebase"); 
     // TODO: Connect to firebase, {need user to be logged in}
     //Open the modal
@@ -146,7 +156,10 @@ const Schedule = () => {
     setSelectedTime(times);
    // console.log("Time selected is: ", times);
     openModal();
-}
+    let data: any = await getCurrUserData();
+    await sendOneMessage(data.phoneNum, `Your appointment has been booked for [date] at ${times}:00 at ${street}, ${city}, ${stateLoc}.`);
+  }
+
   const buildTimes = (times: any, index: number) => {
    
     return (
@@ -155,10 +168,8 @@ const Schedule = () => {
           variant="contained"
           className={classes.button}
           key={index}
-          onClick={() => { 
-            chooseAppointment(times);
-          }}       
-           >
+          onClick={() => {chooseAppointment(times)}}
+        >
           {times > 12 ? times - 12 + ":00 pm" : times + ":00 am"}
         </Button>
         
@@ -170,6 +181,7 @@ const Schedule = () => {
     return (
       <div>
         <div className={classes.address}>
+          <a href="/userhomepage"><Button className={classes.backButton} variant="contained" color="secondary">Go Back</Button></a>
           <h1>
             Location: {city}, {stateLoc}
           </h1>

@@ -1,14 +1,14 @@
 import { Button, TextField, FormControl } from "@material-ui/core";
 import React, { useState, ChangeEvent, useContext } from "react";
-import "./components.css";
-import Header from "./Header";
+// import "../component.css"
+import Header from '../Header'
 import {
   doCreateUserWithEmailandPassword,
   createUserData,
-} from "../firebase/firebaseFunctions";
-import SocialSignIn from "./doSocialSignIn";
+} from "../../firebase/firebaseFunctions";
+import SocialSignIn from "../doSocialSignIn";
 import { useHistory } from "react-router-dom";
-import { AuthContext } from "../firebase/firebaseAuth";
+import { AuthContext } from "../../firebase/firebaseAuth";
 import { Redirect } from "react-router-dom";
 
 function Register() {
@@ -39,8 +39,8 @@ function Register() {
       );
       await createUserData(email, password, name);
 
-      if (response === "auth/email-already-in-use") {
-        setError("The email address is already in use by another account.");
+      if (response) {
+        setError(response.message);
       } else {
         history.push("/profile");
       }
@@ -69,7 +69,7 @@ function Register() {
   }
   return (
     <div>
-      <Header />
+	  <Header doesGoToProfile={false} doesGoToScheduler={false}/>
       <h1 className="title">Sign Up as User</h1>
       <div className="form-card">
         <form>

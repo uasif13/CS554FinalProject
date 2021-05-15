@@ -13,6 +13,7 @@ import {
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import SignOutButton from "./SignOut";
+import Header from "./Header";
 
 const useStyles = makeStyles({
   table: {
@@ -118,6 +119,7 @@ function UserHomePage() {
   console.log("Locations", locations);
   return (
     <div>
+      <Header doesGoToProfile={true} doesGoToScheduler={false}/>
       <SignOutButton />
       <h1>Covid Scheduler</h1>
       <p>User Home Page</p>

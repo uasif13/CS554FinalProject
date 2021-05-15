@@ -1,4 +1,6 @@
 import firebase from "firebase";
+import { db } from "./firebaseServer";
+import { sendOneMessage } from "../messaging/message";
 
 async function doCreateUserWithEmailandPassword(
   email: string,
@@ -7,10 +9,12 @@ async function doCreateUserWithEmailandPassword(
 ) {
   try {
     await firebase.auth().createUserWithEmailAndPassword(email, password);
-    // await firebase.auth().currentUser?.updateProfile({ displayName: displayName });
+    await firebase
+      .auth()
+      .currentUser?.updateProfile({ displayName: displayName });
   } catch (e) {
     console.log(e);
-    return e.code;
+    return e;
   }
 }
 
@@ -29,7 +33,12 @@ async function doChangePassword(
 }
 
 async function doSignInWithEmailAndPassword(email: string, password: string) {
-  await firebase.auth().signInWithEmailAndPassword(email, password);
+  try {
+    await firebase.auth().signInWithEmailAndPassword(email, password);
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
 }
 
 async function doSocialSignIn(provider: string) {
@@ -44,7 +53,12 @@ async function doSocialSignIn(provider: string) {
 }
 
 async function doPasswordReset(email: string) {
-  await firebase.auth().sendPasswordResetEmail(email);
+  try {
+    await firebase.auth().sendPasswordResetEmail(email);
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
 }
 
 async function doSignOut() {
@@ -81,7 +95,80 @@ async function doIncrementVaccines(location: object) {}
 
 async function doDecrementVaccines(location: object) {}
 
-async function getUserKey(email: string) {}
+async function doUpdateUserPhoneAndDist(
+  phoneNum: string,
+  dist: string,
+  optIn: boolean
+) {
+  try {
+    let uid = await firebase.auth().currentUser?.uid;
+    if (uid == null) {
+      return { status: 500, message: "user not logged in" };
+    }
+
+    let data: any = {};
+    await db.ref("Users/" + uid).on("value", (snap) => {
+      data = snap.val();
+    });
+
+    if (data == {}) {
+      return { status: 500, message: "no user found in db with that id" };
+    }
+
+    let obj = {
+      address: {
+        city: data.address.city,
+        state: data.address.state,
+        street: data.address.street,
+        zip: data.address.zip,
+      },
+      dist: dist,
+      email: data.email,
+      firstName: data.firstName,
+      insurance: {
+        group_number: data.group_number,
+        id: data.id,
+        provider: data.provider,
+      },
+      isAdmin: data.isAdmin,
+      lastName: data.lastName,
+      phoneNumber: phoneNum,
+      rabbitMQ: optIn,
+    };
+
+    let newPostKey = db.ref().child("Users").push().key;
+    let updates: any = {};
+    updates["/Users/" + newPostKey] = obj;
+    updates["/Users/" + uid + "/" + newPostKey] = obj;
+
+    await db.ref().update(updates);
+  } catch (e) {
+    return { status: 500, message: e.message };
+  }
+
+  if (optIn == true) {
+    await sendOneMessage(
+      phoneNum,
+      "Vaccine Scheduler: Congrats! You have successfuly opted in for text messaging. We will update you if vaccines become available in your area."
+    );
+  }
+
+  return { status: 200, message: "success" };
+}
+
+async function getCurrUserData() {
+  let uid = await firebase.auth().currentUser?.uid;
+  if (uid == null) {
+    return { status: 500, message: "user not logged in" };
+  }
+
+  let data: any = {};
+  await db.ref("Users/" + uid).on("value", (snap) => {
+    data = snap.val();
+  });
+
+  return data;
+}
 
 export {
   doCreateUserWithEmailandPassword,
@@ -92,6 +179,7 @@ export {
   doSignOut,
   doIncrementVaccines,
   doDecrementVaccines,
+  doUpdateUserPhoneAndDist,
+  getCurrUserData,
   createUserData,
-  getUserKey,
 };

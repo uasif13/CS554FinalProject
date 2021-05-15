@@ -14,6 +14,7 @@ import {
   makeStyles,
   Button,
 } from "@material-ui/core";
+import Header from "./Header";
 import SignOutButton from "./SignOut";
 import { AuthContext } from "../firebase/firebaseAuth";
 
@@ -81,6 +82,7 @@ function AdminHomePage() {
     }
     fetchData();
     checkAdminPermissions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const buildCard = (currLoc: any, index: number) => {
