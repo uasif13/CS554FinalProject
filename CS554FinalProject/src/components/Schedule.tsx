@@ -181,7 +181,7 @@ const Schedule = () => {
     return (
       <div>
         <div className={classes.address}>
-          <a href="/userhomepage"><Button className={classes.backButton} variant="contained" color="secondary">Go Back</Button></a>
+          <a href="/user"><Button className={classes.backButton} variant="contained" color="secondary">Go Back</Button></a>
           <h1>
             Location: {city}, {stateLoc}
           </h1>

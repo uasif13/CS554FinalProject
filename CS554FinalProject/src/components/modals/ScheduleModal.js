@@ -84,7 +84,7 @@ const ModalContent = styled.div`
   }
 
     const routeChange = () =>{ 
-    let path = `/userhomepage`; 
+    let path = `/user`; 
     history.push(path);
   }
   

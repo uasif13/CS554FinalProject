@@ -101,6 +101,7 @@ function ProfilePage() {
 
                 <div className="phoneInfo">
                     <h1>Contact Information</h1>
+					<p>What is your phone number?</p>
                     <TextField variant="filled" onChange={handlePhoneChange} id="phone-num" required label="Phone Number (No '-' or '+'):" />
                     <p>How far are you willing to travel to get a vaccine?</p>
                     <TextField variant="filled" onChange={handleDistanceChange} id="distance" required label="Distance in Miles:" />
