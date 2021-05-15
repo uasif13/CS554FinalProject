@@ -112,7 +112,7 @@ const Reset = () =>{
 
 	return(
 		<div>
-      		<Header doesGoToProfile={true} doesGoToScheduler={false}/>
+      		<Header doesGoToProfile={true} doesGoToScheduler={false} doesSignOut={false}/>
 			<h1>Forgot Password</h1>
 			<p>Enter email address that you used to register. <br/>
 			We'll send you an email with your username and a link to reset your password.

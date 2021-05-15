@@ -150,6 +150,7 @@ function AdminHomePage() {
   } else {
     return (
       <div>
+		<Header doesGoToProfile={false} doesGoToScheduler={false} doesSignOut={true}/>
         <SignOutButton />
         <h1>Covid Scheduler</h1>
         <p>Admin Home Page</p>

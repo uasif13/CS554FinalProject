@@ -118,8 +118,7 @@ function UserHomePage() {
   console.log("Locations", locations);
   return (
     <div>
-      <Header doesGoToProfile={true} doesGoToScheduler={false}/>
-      <SignOutButton />
+      <Header doesGoToProfile={true} doesGoToScheduler={false} doesSignOut={true}/>
       <h1>Covid Scheduler</h1>
       <p>User Home Page</p>
       <TableContainer component={Paper}>
