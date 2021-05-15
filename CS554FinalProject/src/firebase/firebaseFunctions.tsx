@@ -183,7 +183,6 @@ async function updateInsurance(email: string, memberID: string, groupID: string)
 				if (val.email === email){
 					console.log("We Found Email", val.email)
 					foundID = id;
-					
 				}	
 				return foundID;
 			});

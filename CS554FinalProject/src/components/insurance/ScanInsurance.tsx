@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { makeStyles, Button, TextField, Divider} from '@material-ui/core'; 
+import CircularProgress, { CircularProgressProps } from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 import Tesseract from 'tesseract.js';
 import Jimp from 'jimp';
 import {updateInsurance} from '../../firebase/firebaseFunctions';
@@ -38,6 +41,28 @@ const useStyles = makeStyles({
 
 });
 
+function CircularProgressWithLabel(props: CircularProgressProps & { value: number }) {
+	return (
+	  <Box position="relative" display="inline-flex">
+		<CircularProgress variant="determinate" {...props} />
+		<Box
+		  top={0}
+		  left={0}
+		  bottom={0}
+		  right={0}
+		  position="absolute"
+		  display="flex"
+		  alignItems="center"
+		  justifyContent="center"
+		>
+		  <Typography variant="caption" component="div" color="textSecondary">{`${Math.round(
+			props.value,
+		  )}%`}</Typography>
+		</Box>
+	  </Box>
+	);
+  }
+
 const ScanInsurance =() =>{
     const classes = useStyles();
     const [upload, setUpload] = useState(""); 
@@ -51,6 +76,7 @@ const ScanInsurance =() =>{
 	const { currentUser } = useContext(AuthContext);
     const [memberID, setMemberID] = useState(""); 
     const [groupNum, setGroupNum] = useState(""); 
+	const [progressCircle, setProgressCircle] = useState(0)
 	const history = useHistory();
 
     useEffect(() =>{
@@ -100,11 +126,19 @@ const ScanInsurance =() =>{
             Tesseract.recognize(
                 upload,
                 'eng',
-                { logger: m => console.log(m) }
+                { logger: m => {
+					console.log(m) 
+					if(m.status === "recognizing text"){
+						let val = m.progress * 100; 
+						console.log(val);
+						setProgressCircle(val)
+					}
+				}
+				}
               ).then(({ data: { text } }) => {
 
                     let cleanedText = text.replace(/[-\\n/\\^$*+%?.()|[\]{}\n]/g, ' ').split(' ');
-                    cleanedText = cleanedText.filter( word => (word !== "" && /\d/.test(word)));
+                    cleanedText = cleanedText.filter( word => (word !== "" && /\d/.test(word) && word.length > 3));
                     setExtractedText(cleanedText);
                     setProgress(false);
                     setFinished(true); 
@@ -215,8 +249,13 @@ const ScanInsurance =() =>{
                 <div id="progress">
                     {!(finished) ? 
                         (userUpload && progress) ? 
-                            <h6>...please wait...<br/>
-                            ...extracting text...</h6> : 
+						<div>
+							<h6>...please wait...<br/>
+                            ...extracting text...</h6> 
+							<CircularProgressWithLabel value={progressCircle} />
+						</div>
+
+							: 
                             "" : 
                             <div><br/>
                             <h6>Completed</h6></div>} 

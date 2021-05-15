@@ -56,7 +56,6 @@ function UserHomePage() {
         db.ref()
           .child("Locations")
           .on("value", (snapshot) => {
-            console.log("snapshot", snapshot);
             snapshot.forEach((snap) => {
               let id = snap.key;
               let val = snap.val();
