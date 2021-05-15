@@ -7,15 +7,13 @@ async function doCreateUserWithEmailandPassword(
   password: string,
   displayName: string
 ) {
-	try{
-		await firebase.auth().createUserWithEmailAndPassword(email, password)
-		// await firebase.auth().currentUser?.updateProfile({ displayName: displayName });
-	
-	}catch(e){
-		console.log(e)
-		return e.code
-	}
-
+  try {
+    await firebase.auth().createUserWithEmailAndPassword(email, password);
+    await firebase.auth().currentUser?.updateProfile({ displayName: displayName });
+  } catch (e) {
+    console.log(e);
+    return e.code;
+  }
 }
 
 async function doChangePassword(
@@ -55,13 +53,36 @@ async function doSignOut() {
   await firebase.auth().signOut();
 }
 
-async function doIncrementVaccines(location: object) {
-  
+async function createUserData(email: string, password: string, name: string) {
+  const UsersListRef = firebase.database().ref("Users");
+  const newUserRef = UsersListRef.push();
+  newUserRef.set({
+    address: {
+      city: "",
+      state: "",
+      street: "",
+      zip: "",
+    },
+    dist: 1,
+    email: email,
+    firstName: name,
+    insurance: {
+      group_number: "",
+      id: "",
+      provider: "",
+    },
+    isAdmin: false,
+    lastName: "Asif Uddin",
+    phoneNumber: 1234567890,
+    password: password,
+    rabbitMQ: false,
+  });
+  console.log(newUserRef);
 }
 
-async function doDecrementVaccines(location: object) {
+async function doIncrementVaccines(location: object) {}
 
-}
+async function doDecrementVaccines(location: object) {}
 
 async function doUpdateUserPhoneAndDist(phoneNum: string, dist: string, optIn: boolean) {
   try {
@@ -144,5 +165,6 @@ export {
   doIncrementVaccines,
   doDecrementVaccines,
   doUpdateUserPhoneAndDist,
-  getCurrUserData
+  getCurrUserData,
+  createUserData,
 };

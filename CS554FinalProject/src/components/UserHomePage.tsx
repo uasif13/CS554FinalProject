@@ -51,16 +51,22 @@ function UserHomePage() {
   let card = null;
 
   useEffect(() => {
-    async function fetchData() {
+    function fetchData() {
       try {
-        db.ref("Locations").on("value", (snapshot) => {
-          snapshot.forEach((snap) => {
-            let id = snap.key;
-            let val = snap.val();
-            allLocations.push({ key: id, val: val });
+        db.ref("Locations")
+          .once("value")
+          .then((snapshot) => console.log("snapshot", snapshot));
+        db.ref()
+          .child("Locations")
+          .on("value", (snapshot) => {
+            console.log("snapshot", snapshot);
+            snapshot.forEach((snap) => {
+              let id = snap.key;
+              let val = snap.val();
+              allLocations.push({ key: id, val: val });
+            });
+            setLocations(allLocations);
           });
-          setLocations(allLocations);
-        });
       } catch (e) {
         console.log(e);
       }
@@ -113,9 +119,11 @@ function UserHomePage() {
       });
   }
 
+  console.log("Locations", locations);
   return (
     <div>
       <Header doesGoToProfile={true} doesGoToScheduler={false}/>
+      <SignOutButton />
       <h1>Covid Scheduler</h1>
       <p>User Home Page</p>
       <TableContainer component={Paper}>
