@@ -70,17 +70,18 @@ async function createUserData(email: string, password: string, name: string) {
       provider: "",
     },
     isAdmin: false,
-    lastName: "Asif Uddin",
+    lastName: name,
     phoneNumber: 1234567890,
     password: password,
     rabbitMQ: false,
   });
-  console.log(newUserRef);
 }
 
 async function doIncrementVaccines(location: object) {}
 
 async function doDecrementVaccines(location: object) {}
+
+async function getUserKey(email: string) {}
 
 export {
   doCreateUserWithEmailandPassword,
@@ -92,4 +93,5 @@ export {
   doIncrementVaccines,
   doDecrementVaccines,
   createUserData,
+  getUserKey,
 };

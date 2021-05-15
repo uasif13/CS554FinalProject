@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
+import { Redirect } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseServer";
 import { doIncrementVaccines } from "../firebase/firebaseFunctions";
 import { doDecrementVaccines } from "../firebase/firebaseFunctions";
@@ -14,6 +15,7 @@ import {
   Button,
 } from "@material-ui/core";
 import SignOutButton from "./SignOut";
+import { AuthContext } from "../firebase/firebaseAuth";
 
 const useStyles = makeStyles({
   table: {
@@ -42,8 +44,10 @@ interface Location {
 }
 
 function AdminHomePage() {
+  const { currentUser } = useContext(AuthContext);
   const [locations, setLocations] = useState<Array<Location>>([]);
   const classes = useStyles();
+  const [admin, setAdmin] = useState<Boolean>(true);
 
   let allLocations: Location[] = [];
   let card = null;
@@ -62,7 +66,21 @@ function AdminHomePage() {
         console.log(e);
       }
     }
+    async function checkAdminPermissions() {
+      try {
+        db.ref("Users").on("value", (snapshot) => {
+          snapshot.forEach((snap) => {
+            if (snap.val().email === currentUser.email) {
+              setAdmin(snap.val().isAdmin);
+            }
+          });
+        });
+      } catch (e) {
+        alert(e);
+      }
+    }
     fetchData();
+    checkAdminPermissions();
   }, []);
 
   const buildCard = (currLoc: any, index: number) => {
@@ -125,27 +143,31 @@ function AdminHomePage() {
       });
   }
 
-  return (
-    <div>
-      <SignOutButton />
-      <h1>Covid Scheduler</h1>
-      <p>Admin Home Page</p>
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell> City/Town</TableCell>
-              <TableCell align="right">Status</TableCell>
-              <TableCell align="right">Increase Vaccines</TableCell>
-              <TableCell align="right">Decrease Vaccines</TableCell>
-              <TableCell align="right">Notify Subscribers</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>{card}</TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  );
+  if (!admin) {
+    return <Redirect to="/user" />;
+  } else {
+    return (
+      <div>
+        <SignOutButton />
+        <h1>Covid Scheduler</h1>
+        <p>Admin Home Page</p>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell> City/Town</TableCell>
+                <TableCell align="right">Status</TableCell>
+                <TableCell align="right">Increase Vaccines</TableCell>
+                <TableCell align="right">Decrease Vaccines</TableCell>
+                <TableCell align="right">Notify Subscribers</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>{card}</TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+    );
+  }
 }
 
 export default AdminHomePage;
