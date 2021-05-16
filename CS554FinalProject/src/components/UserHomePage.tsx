@@ -14,6 +14,8 @@ import {
 import { useHistory } from "react-router-dom";
 import SignOutButton from "./SignOut";
 import Header from "./Header";
+import { getCurrUserData } from "../firebase/firebaseFunctions";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles({
   table: {
@@ -44,6 +46,7 @@ interface Location {
 
 function UserHomePage() {
   const [locations, setLocations] = useState<Array<Location>>([]);
+  const [userData, setUserData] = useState(Object);
   const classes = useStyles();
   const history = useHistory<currLocation>();
 
@@ -51,8 +54,10 @@ function UserHomePage() {
   let card = null;
 
   useEffect(() => {
-    function fetchData() {
+    async function fetchData() {
       try {
+        let data = await getCurrUserData();
+        setUserData(data);
         db.ref()
           .child("Locations")
           .on("value", (snapshot) => {
@@ -85,11 +90,14 @@ function UserHomePage() {
         </TableCell>
         <TableCell align="right">
           {currLoc.numVaccines && currLoc.numVaccines > 1
-            ? "Available"
-            : "Fully Booked"}
+            ? <Alert severity="success">Available</Alert>
+            : <Alert severity="error">Fully Booked</Alert>}
         </TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines && currLoc.numVaccines > 1 ? (
+          {userData.insurance.id == "" ? 
+            <Button variant="contained"
+            color="secondary" onClick={() => {history.push("/profile")}}>Update Insurance Before Booking</Button>
+          : currLoc.numVaccines && currLoc.numVaccines > 1 ? (
             <Button
               variant="contained"
               className={classes.button}

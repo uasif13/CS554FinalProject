@@ -134,54 +134,31 @@ async function doUpdateUserPhoneAndDist(
       return { status: 500, message: "user not logged in" };
     }
 
-    let data: any = {};
-    await db.ref("Users/" + uid).on("value", (snap) => {
-      data = snap.val();
-    });
-
-    if (data == {}) {
-      return { status: 500, message: "no user found in db with that id" };
-    }
-
-    let obj = {
-      address: {
-        city: data.address.city,
-        state: data.address.state,
-        street: data.address.street,
-        zip: data.address.zip,
-      },
-      dist: dist,
-      email: data.email,
-      firstName: data.firstName,
-      insurance: {
-        group_number: data.group_number,
-        id: data.id,
-        provider: data.provider,
-      },
-      isAdmin: data.isAdmin,
-      lastName: data.lastName,
+    db.ref("Users/" + uid).update({
       phoneNumber: phoneNum,
       rabbitMQ: optIn,
-    };
+      dist: dist
+    });
 
-    let newPostKey = db.ref().child("Users").push().key;
-    let updates: any = {};
-    updates["/Users/" + newPostKey] = obj;
-    updates["/Users/" + uid + "/" + newPostKey] = obj;
-
-    await db.ref().update(updates);
   } catch (e) {
     return { status: 500, message: e.message };
   }
-
+  
   if (optIn == true) {
-    await sendOneMessage(
-      phoneNum,
-      "Vaccine Scheduler: Congrats! You have successfuly opted in for text messaging. We will update you if vaccines become available in your area."
-    );
+    try {
+      let data = await getCurrUserData();
+        await sendOneMessage(
+          phoneNum,
+          "Vaccine Scheduler: Congrats! You have successfuly opted in for text messaging. We will update you if vaccines become available in your area.",
+          data,
+        );
+    } catch (e) {
+      return {status: 500, message: "Internal message error"};
+    } 
   }
 
-  return { status: 200, message: "success" };
+  return {status: 200, message: "User updated"};
+
 }
 
 async function getCurrUserData() {
@@ -191,8 +168,8 @@ async function getCurrUserData() {
   }
 
   let data: any = {};
-  await db.ref("Users/" + uid).on("value", (snap) => {
-    data = snap.val();
+  data = db.ref("Users/" + uid).once('value').then((snap) => {
+    return snap.val();
   });
 
   return data;
@@ -202,37 +179,31 @@ async function getCurrUserData() {
 
 async function updateInsurance(email: string, memberID: string, groupID: string){
 	try{
-		let foundID: any;
-		await db.ref().child("Users").on("value", async(snapshot) =>{
-			snapshot.forEach((snap) => {
-				let id = snap.key;
-				let val = snap.val();
-				if (val.email === email){
-					console.log("We Found Email", val.email)
-					foundID = id;
-				}	
-				return foundID;
-			});
-			if (foundID === undefined){
-				throw Error("ID not found")
-			}else{
-				await db.ref('Users/' + foundID).update({
-					insurance: {
-						group_number: groupID,
-						id: memberID
-					}
-				});
+		let uid = await firebase.auth().currentUser?.uid;
+    if (uid == null) {
+      return { status: 500, message: "user not logged in" };
+    }
+		
+    await db.ref('Users/' + uid).update({
+			insurance: {
+				group_number: groupID,
+				id: memberID
 			}
-		})
+		});
+
 	}catch(e){
 		console.log(e);
 		return e 
 	}
 };
+
+
 async function helper(data: object){
 	console.log("in helper", data);
 	return data; 
 }
+
+
 async function retrieveUserData(email: string){
 	try{
 		let eventResponse = await db.ref().child("Users")
