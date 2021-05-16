@@ -63,7 +63,6 @@ function Register() {
     setPassword(event.target.value);
   };
 
-  console.log(currentUser);
   if (currentUser) {
     return <Redirect to="/user" />;
   }

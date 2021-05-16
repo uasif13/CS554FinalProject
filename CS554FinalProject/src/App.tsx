@@ -32,7 +32,7 @@ function App() {
             <PrivateRoute exact path="/profile" component={ProfilePage} />
             <PrivateRoute exact path="/schedule" component={Schedule} />
             <PrivateRoute exact path="/admin" component={AdminHomePage} />
-			<Route exact path="/reset" component={Reset} />
+			      <Route exact path="/reset" component={Reset} />
             <Route exact path="*" component={NotFound} />
           </Switch>
         </div>

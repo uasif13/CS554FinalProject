@@ -1,23 +1,22 @@
-import React, { useRef, useEffect, useCallback } from 'react';
-import ReactModal from 'react-modal';
+import React, { useRef, useEffect, useCallback } from "react";
+import ReactModal from "react-modal";
 import { useHistory } from "react-router-dom";
-import styled from 'styled-components';
-import { MdClose } from 'react-icons/md';
+import styled from "styled-components";
+import { MdClose } from "react-icons/md";
 
-
-ReactModal.setAppElement('#root');
+ReactModal.setAppElement("#root");
 const customStyles = {
   content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    width: '50%',
-    border: '1px solid #28547a',
-    borderRadius: '4px'
-  }
+    top: "50%",
+    left: "50%",
+    right: "auto",
+    bottom: "auto",
+    marginRight: "-50%",
+    transform: "translate(-50%, -50%)",
+    width: "50%",
+    border: "1px solid #28547a",
+    borderRadius: "4px",
+  },
 };
 
 const Background = styled.div`
@@ -72,64 +71,70 @@ const ModalContent = styled.div`
 //   z-index: 10;
 // `;
 
-
- function ScheduleModal ({showScheduleModal, setScheduleModal, city, stateLoc, time}) {
+function ScheduleModal({
+  showScheduleModal,
+  setScheduleModal,
+  city,
+  stateLoc,
+  time,
+}) {
   const modalRef = useRef();
   const history = useHistory();
-  let str= " : 00 am";
-  if(time > 12)
-  {
-    time=time - 12;
-    str=" : 00 pm"
+  let str = " : 00 am";
+  if (time > 12) {
+    time = time - 12;
+    str = " : 00 pm";
   }
 
-    const routeChange = () =>{ 
-    let path = `/userhomepage`; 
+  const routeChange = () => {
+    let path = `/user`;
     history.push(path);
-  }
-  
-  const closeModal = e => {
+  };
+
+  const closeModal = (e) => {
     if (modalRef.current === e.target) {
       setScheduleModal(false);
     }
   };
   const keyPress = useCallback(
-    e => {
-      if (e.key === 'Escape' && showScheduleModal) {
+    (e) => {
+      if (e.key === "Escape" && showScheduleModal) {
         setScheduleModal(false);
-        console.log('I pressed');
+        console.log("I pressed");
       }
     },
     [setScheduleModal, showScheduleModal]
   );
-  useEffect(
-    () => {
-      document.addEventListener('keydown', keyPress);
-      return () => document.removeEventListener('keydown', keyPress);
-    },
-    [keyPress]
-  );
+  useEffect(() => {
+    document.addEventListener("keydown", keyPress);
+    return () => document.removeEventListener("keydown", keyPress);
+  }, [keyPress]);
   return (
     <>
-    
-    {showScheduleModal ? (
-      <ReactModal 
-      name="scheduleModal"
-      isOpen={showScheduleModal}
-      contentLabel="Appointment Sch"
-      style={customStyles}>
-        
-            <h1>You have successfully booked <br />
-           an appointment at </h1>
-           <p>{city}, {stateLoc}</p>
-           <br />
-           <p>at {time}{str}</p>
-                <button onClick={routeChange}>Return to Homepage</button>
+      {showScheduleModal ? (
+        <ReactModal
+          name="scheduleModal"
+          isOpen={showScheduleModal}
+          contentLabel="Appointment Sch"
+          style={customStyles}
+        >
+          <h1>
+            You have successfully booked <br />
+            an appointment at{" "}
+          </h1>
+          <p>
+            {city}, {stateLoc}
+          </p>
+          <br />
+          <p>
+            at {time}
+            {str}
+          </p>
+          <button onClick={routeChange}>Return to Homepage</button>
         </ReactModal>
-    ): null }
-    
+      ) : null}
     </>
-  )
+  );
 }
 
-export default ScheduleModal ;
+export default ScheduleModal;

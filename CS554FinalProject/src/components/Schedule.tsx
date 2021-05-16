@@ -75,11 +75,15 @@ const Schedule = () => {
   const [showScheduleModal, setScheduleModal]= useState<boolean>(false);
   const [data, setData] = useState<{ [key: string]: [times: number] }>();
   const [selectedTime, setSelectedTime] = useState<number>();
+
+
   useEffect(() => {
     async function fetchData() {
       try {
         let location = state.val.appointmentsForLocation;
         let obj: { [key: string]: [times: number] } = {};
+
+        console.log(state);
 
         await Promise.all(
           Object.keys(location).map(async (key) => {
@@ -157,7 +161,8 @@ const Schedule = () => {
    // console.log("Time selected is: ", times);
     openModal();
     let data: any = await getCurrUserData();
-    await sendOneMessage(data.phoneNum, `Your appointment has been booked for [date] at ${times}:00 at ${street}, ${city}, ${stateLoc}.`);
+    console.log(data);
+    // await sendOneMessage(data.phoneNum, `Your appointment has been booked for [date] at ${times}:00 at ${street}, ${city}, ${stateLoc}.`);
   }
 
   const buildTimes = (times: any, index: number) => {
@@ -181,7 +186,7 @@ const Schedule = () => {
     return (
       <div>
         <div className={classes.address}>
-          <a href="/userhomepage"><Button className={classes.backButton} variant="contained" color="secondary">Go Back</Button></a>
+          <a href="/user"><Button className={classes.backButton} variant="contained" color="secondary">Go Back</Button></a>
           <h1>
             Location: {city}, {stateLoc}
           </h1>

@@ -66,9 +66,9 @@ async function doSignOut() {
 }
 
 async function createUserData(email: string, password: string, name: string) {
-  const UsersListRef = firebase.database().ref("Users");
-  const newUserRef = UsersListRef.push();
-  newUserRef.set({
+  let uid = await firebase.auth().currentUser?.uid;
+  const UsersListRef = firebase.database().ref("Users/" + uid);
+  UsersListRef.set({
     address: {
       city: "",
       state: "",
@@ -165,6 +165,7 @@ async function getCurrUserData() {
   let data: any = {};
   await db.ref("Users/" + uid).on("value", (snap) => {
     data = snap.val();
+    console.log(uid);
   });
 
   return data;
