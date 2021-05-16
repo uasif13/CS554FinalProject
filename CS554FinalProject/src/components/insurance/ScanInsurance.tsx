@@ -1,7 +1,13 @@
-import React, {useEffect, useState} from 'react'; 
+import React, { useEffect, useState, useContext } from "react";
 import { makeStyles, Button, TextField, Divider} from '@material-ui/core'; 
+import CircularProgress, { CircularProgressProps } from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 import Tesseract from 'tesseract.js';
 import Jimp from 'jimp';
+import {updateInsurance} from '../../firebase/firebaseFunctions';
+import { AuthContext } from "../../firebase/firebaseAuth";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
     table: {
@@ -35,19 +41,43 @@ const useStyles = makeStyles({
 
 });
 
+function CircularProgressWithLabel(props: CircularProgressProps & { value: number }) {
+	return (
+	  <Box position="relative" display="inline-flex">
+		<CircularProgress variant="determinate" {...props} />
+		<Box
+		  top={0}
+		  left={0}
+		  bottom={0}
+		  right={0}
+		  position="absolute"
+		  display="flex"
+		  alignItems="center"
+		  justifyContent="center"
+		>
+		  <Typography variant="caption" component="div" color="textSecondary">{`${Math.round(
+			props.value,
+		  )}%`}</Typography>
+		</Box>
+	  </Box>
+	);
+  }
+
 const ScanInsurance =() =>{
     const classes = useStyles();
     const [upload, setUpload] = useState(""); 
     const [extractedText, setExtractedText] = useState<Array<String>>([]);
-    const [error, setError] = useState(false); 
+    const [error, setError] = useState(""); 
     const [userUpload, setUserUpload] = useState(true); 
     const [progress, setProgress] = useState(false);
     const [finished, setFinished] = useState(false)
     const [JIMPuploading, setJIMPUploading] = useState(false)
     const [reset, setReset] = useState(false);
-
+	const { currentUser } = useContext(AuthContext);
     const [memberID, setMemberID] = useState(""); 
     const [groupNum, setGroupNum] = useState(""); 
+	const [progressCircle, setProgressCircle] = useState(0)
+	const history = useHistory();
 
     useEffect(() =>{
         async function fetchData(){
@@ -96,17 +126,24 @@ const ScanInsurance =() =>{
             Tesseract.recognize(
                 upload,
                 'eng',
-                { logger: m => console.log(m) }
+                { logger: m => {
+					console.log(m) 
+					if(m.status === "recognizing text"){
+						let val = m.progress * 100; 
+						setProgressCircle(val)
+					}
+				}
+				}
               ).then(({ data: { text } }) => {
 
                     let cleanedText = text.replace(/[-\\n/\\^$*+%?.()|[\]{}\n]/g, ' ').split(' ');
-                    cleanedText = cleanedText.filter( word => (word !== "" && /\d/.test(word)));
+                    cleanedText = cleanedText.filter( word => (word !== "" && /\d/.test(word) && word.length > 3));
                     setExtractedText(cleanedText);
                     setProgress(false);
                     setFinished(true); 
               });
         }else{
-            setError(true);
+            setError("Extracting Error");
         }      
     };
     const handleSetMemberID = (memberID: string) => {
@@ -121,12 +158,23 @@ const ScanInsurance =() =>{
 
     };
 
-    const pushToFireBase = () =>{
+    const pushToFireBase = async() =>{
         console.log("Push to firebase")
+		if (currentUser){
+			console.log("email", currentUser.email);
+			console.log("memberID", memberID);
+			console.log("groupID", groupNum);
+			let response = await updateInsurance(currentUser.email, memberID, groupNum);
 
-        setReset(true); 
-        // TODO: call to firebase to upload member id (need user to be logged in)
-        // TODO: call to firebase to upload group number (need user to be logged in)
+			if (response){
+				console.log("We have errors");
+				setError(response.message);
+			}else{
+				console.log("success");
+				setError("");
+				history.push("/user");
+			}
+		}
     }
 
     const clearStates = () =>{
@@ -196,8 +244,13 @@ const ScanInsurance =() =>{
                 <div id="progress">
                     {!(finished) ? 
                         (userUpload && progress) ? 
-                            <h6>...please wait...<br/>
-                            ...extracting text...</h6> : 
+						<div>
+							<h6>...please wait...<br/>
+                            ...extracting text...</h6> 
+							<CircularProgressWithLabel value={progressCircle} />
+						</div>
+
+							: 
                             "" : 
                             <div><br/>
                             <h6>Completed</h6></div>} 

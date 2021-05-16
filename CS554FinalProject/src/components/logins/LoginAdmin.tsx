@@ -22,7 +22,7 @@ const LoginAdmin = (props: { admin: Boolean }) => {
 	  else if(password.trim().length === 0){
 		  setError("Password is Required")
 	  }else{
-		  let response  =	await doSignInWithEmailAndPassword(email, password);
+		  let response  =	await doSignInWithEmailAndPassword(email.trim(), password.trim());
   
 		  if (response){
 			  setError(response.message); 
@@ -42,7 +42,7 @@ const LoginAdmin = (props: { admin: Boolean }) => {
   
 	return (
 	  <div>
-      <Header doesGoToProfile={false} doesGoToScheduler={false}/>
+      <Header doesGoToProfile={false} doesGoToScheduler={false} doesSignOut={false} doesEdit={false}/>
 		<h1 className="title">
 		  Login as Admin
 		</h1>

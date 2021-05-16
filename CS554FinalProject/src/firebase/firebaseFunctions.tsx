@@ -196,6 +196,60 @@ async function getCurrUserData() {
   });
 
   return data;
+};
+
+
+
+async function updateInsurance(email: string, memberID: string, groupID: string){
+	try{
+		let foundID: any;
+		await db.ref().child("Users").on("value", async(snapshot) =>{
+			snapshot.forEach((snap) => {
+				let id = snap.key;
+				let val = snap.val();
+				if (val.email === email){
+					console.log("We Found Email", val.email)
+					foundID = id;
+				}	
+				return foundID;
+			});
+			if (foundID === undefined){
+				throw Error("ID not found")
+			}else{
+				await db.ref('Users/' + foundID).update({
+					insurance: {
+						group_number: groupID,
+						id: memberID
+					}
+				});
+			}
+		})
+	}catch(e){
+		console.log(e);
+		return e 
+	}
+};
+async function helper(data: object){
+	console.log("in helper", data);
+	return data; 
+}
+async function retrieveUserData(email: string){
+	try{
+		let eventResponse = await db.ref().child("Users")
+		const snapshot = await eventResponse.once('value');
+		let UserData: any
+		snapshot.forEach((snap) => {
+			let val = snap.val();
+			if (val.email === email){
+				console.log("We Found Email", val.email)
+				UserData = val
+			}	
+		});
+		return UserData;
+	}catch(e){
+		console.log(e);
+		return e 
+	}
 }
 
 export {
@@ -204,9 +258,12 @@ export {
   doSignInWithEmailAndPassword,
   doSocialSignIn,
   doPasswordReset,
+  helper,
   doSignOut,
   doUpdateVaccineCount,
   doUpdateUserPhoneAndDist,
   getCurrUserData,
   createUserData,
+  updateInsurance, 
+  retrieveUserData
 };

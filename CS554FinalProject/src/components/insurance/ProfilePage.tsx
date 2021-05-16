@@ -28,8 +28,16 @@ function ProfilePage() {
     }
 
     useEffect(() =>{
-        console.log(radioButton)
-        setLoading(false); 
+
+
+		async function fetchData() {
+			console.log(radioButton)
+			setLoading(false); 
+		}
+		fetchData();
+		return () => {
+			console.log("clean up func")
+		}
     }, [radioButton])
 
     const handleRadioButtons = (event: any) => { 
@@ -84,7 +92,7 @@ function ProfilePage() {
         return(
             <div>
 				<div className="profileHeader">
-                <Header doesGoToProfile={false} doesGoToScheduler={true}/>
+                <Header doesGoToProfile={false} doesGoToScheduler={true} doesSignOut={true} doesEdit={false}/>
                 <h1>User Details</h1>
 				</div>
 

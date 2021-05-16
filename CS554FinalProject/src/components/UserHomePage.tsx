@@ -56,7 +56,6 @@ function UserHomePage() {
         db.ref()
           .child("Locations")
           .on("value", (snapshot) => {
-            console.log("snapshot", snapshot);
             snapshot.forEach((snap) => {
               let id = snap.key;
               let val = snap.val();
@@ -119,8 +118,7 @@ function UserHomePage() {
   console.log("Locations", locations);
   return (
     <div>
-      <Header doesGoToProfile={true} doesGoToScheduler={false}/>
-      <SignOutButton />
+      <Header doesGoToProfile={true} doesGoToScheduler={false} doesSignOut={true} doesEdit = {true}/>
       <h1>Covid Scheduler</h1>
       <p>User Home Page</p>
       <TableContainer component={Paper}>

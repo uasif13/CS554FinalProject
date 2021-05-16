@@ -21,23 +21,29 @@ function Register() {
   const { currentUser } = useContext(AuthContext);
 
   const createAccount = async () => {
-    if (name.trim().length === 0) {
+	let nameCleaned = name.trim();
+	let emailCleaned = email.trim();
+	let usernameCleaned = username.trim();
+	let passwordCleaned = password.trim(); 
+
+
+    if (nameCleaned.length === 0) {
       setError("Name is required");
-    } else if (email.trim().length === 0) {
+    } else if (emailCleaned.trim().length === 0) {
       setError("Email is required");
-    } else if (!email.includes("@")) {
+    } else if (!emailCleaned.includes("@")) {
       setError("Badly formed email");
-    } else if (username.trim().length === 0) {
+    } else if (usernameCleaned.length === 0) {
       setError("Username is required");
-    } else if (password.trim().length === 0) {
+    } else if (passwordCleaned.length === 0) {
       setError("Password is required");
     } else {
       let response = await doCreateUserWithEmailandPassword(
-        email,
-        password,
-        username
+        emailCleaned,
+        passwordCleaned,
+        usernameCleaned
       );
-      await createUserData(email, password, name);
+      await createUserData(emailCleaned, passwordCleaned, usernameCleaned);
 
       if (response) {
         setError(response.message);
@@ -68,7 +74,7 @@ function Register() {
   }
   return (
     <div>
-	  <Header doesGoToProfile={false} doesGoToScheduler={false}/>
+	  <Header doesGoToProfile={false} doesGoToScheduler={false} doesSignOut={false} doesEdit={false}/>
       <h1 className="title">Sign Up as User</h1>
       <div className="form-card">
         <form>
