@@ -92,7 +92,7 @@ function ProfilePage() {
         return(
             <div>
 				<div className="profileHeader">
-                <Header doesGoToProfile={false} doesGoToScheduler={true} doesSignOut={true}/>
+                <Header doesGoToProfile={false} doesGoToScheduler={true} doesSignOut={true} doesEdit={false}/>
                 <h1>User Details</h1>
 				</div>
 

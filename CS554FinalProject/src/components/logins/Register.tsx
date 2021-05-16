@@ -74,7 +74,7 @@ function Register() {
   }
   return (
     <div>
-	  <Header doesGoToProfile={false} doesGoToScheduler={false} doesSignOut={false}/>
+	  <Header doesGoToProfile={false} doesGoToScheduler={false} doesSignOut={false} doesEdit={false}/>
       <h1 className="title">Sign Up as User</h1>
       <div className="form-card">
         <form>

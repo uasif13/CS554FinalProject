@@ -173,7 +173,6 @@ async function getCurrUserData() {
 
 
 async function updateInsurance(email: string, memberID: string, groupID: string){
-
 	try{
 		let foundID: any;
 		await db.ref().child("Users").on("value", async(snapshot) =>{
@@ -196,8 +195,29 @@ async function updateInsurance(email: string, memberID: string, groupID: string)
 					}
 				});
 			}
-
 		})
+	}catch(e){
+		console.log(e);
+		return e 
+	}
+};
+async function helper(data: object){
+	console.log("in helper", data);
+	return data; 
+}
+async function retrieveUserData(email: string){
+	try{
+		let eventResponse = await db.ref().child("Users")
+		const snapshot = await eventResponse.once('value');
+		let UserData: any
+		snapshot.forEach((snap) => {
+			let val = snap.val();
+			if (val.email === email){
+				console.log("We Found Email", val.email)
+				UserData = val
+			}	
+		});
+		return UserData;
 	}catch(e){
 		console.log(e);
 		return e 
@@ -210,6 +230,7 @@ export {
   doSignInWithEmailAndPassword,
   doSocialSignIn,
   doPasswordReset,
+  helper,
   doSignOut,
   doIncrementVaccines,
   doDecrementVaccines,
@@ -217,4 +238,5 @@ export {
   getCurrUserData,
   createUserData,
   updateInsurance, 
+  retrieveUserData
 };

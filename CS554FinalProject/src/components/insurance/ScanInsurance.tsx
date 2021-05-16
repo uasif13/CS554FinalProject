@@ -130,7 +130,6 @@ const ScanInsurance =() =>{
 					console.log(m) 
 					if(m.status === "recognizing text"){
 						let val = m.progress * 100; 
-						console.log(val);
 						setProgressCircle(val)
 					}
 				}
@@ -161,14 +160,10 @@ const ScanInsurance =() =>{
 
     const pushToFireBase = async() =>{
         console.log("Push to firebase")
-
-        // setReset(true); 
-		console.log("memberID", memberID);
-		console.log("groupID", groupNum);
-
 		if (currentUser){
 			console.log("email", currentUser.email);
-
+			console.log("memberID", memberID);
+			console.log("groupID", groupNum);
 			let response = await updateInsurance(currentUser.email, memberID, groupNum);
 
 			if (response){

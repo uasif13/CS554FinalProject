@@ -12,7 +12,7 @@ import NotFound from "./components/NotFound";
 import Reset from "./components/logins/Reset";
 import { AuthProvider } from "./firebase/firebaseAuth";
 import PrivateRoute from "./PrivateRoute";
-
+import UserInfo from "./components/UserInfo";
 
 function App() {
   return (
@@ -32,6 +32,7 @@ function App() {
             <PrivateRoute exact path="/profile" component={ProfilePage} />
             <PrivateRoute exact path="/schedule" component={Schedule} />
             <PrivateRoute exact path="/admin" component={AdminHomePage} />
+			<PrivateRoute exact path="/info" component={UserInfo} />
 			<Route exact path="/reset" component={Reset} />
             <Route exact path="*" component={NotFound} />
           </Switch>
