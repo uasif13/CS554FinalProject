@@ -11,16 +11,9 @@
     <li>Ayesha Parveen</li>
 </ul>
 <h2>Setup</h2>
-<h3>Messaging Server</h3>
 <ol>
-    <li>Run `npm install` inside /messager</li>
-    <li>Run `npm start`</li>
-</ol>
-<h3>Scheduler Frontend</h3>
-<ol>
-    <li>Run `npm install` inside /vaccine-scheduler</li>
-    <li>Create a file .env inside of /vaccine-scheduler</li>
-    <li>Implement firebase constant absent from the app</li>
-    <li><b>Note for Grading: </b>The .env file is present inside the zipped submisson</li>
-    <li>Run `npm start`</li>
+    <li>Install Docker on system. ("https://docs.docker.com/get-docker/")</li>
+    <li>Install Docker-Compose on system. ("https://docs.docker.com/compose/install/")</li>
+    <li>In root of project (Where docker-compose.yml exists) run docker-compose up --build</li>
+    <li>Enjoy</li>
 </ol>
