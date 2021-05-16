@@ -75,6 +75,7 @@ const Schedule = () => {
   const [showScheduleModal, setScheduleModal]= useState<boolean>(false);
   const [data, setData] = useState<{ [key: string]: [times: number] }>();
   const [selectedTime, setSelectedTime] = useState<number>();
+  const [dateSelected, setDateSelected] = useState("");
   useEffect(() => {
     async function fetchData() {
       try {
@@ -129,9 +130,8 @@ const Schedule = () => {
     setScheduleModal(prev => !prev);
 }
 
-
-
   const buildButtons = (buttons: any, times: any) => {
+    console.log(buttons)
     return (
       <div key={times}>
         <Button
@@ -139,6 +139,7 @@ const Schedule = () => {
           className={classes.button}
           onClick={() => {
             showTimes(times);
+            setDateSelected(buttons.slice(0,10));
           }}
         >
           {buttons.slice(0, 10)}
@@ -149,19 +150,14 @@ const Schedule = () => {
 
 
   const chooseAppointment = async (times:any) => {
-    console.log("User Chose Appointment. Push to Firebase"); 
-    // TODO: Connect to firebase, {need user to be logged in}
-    //Open the modal
-    // handleOpenScheduleModal(city,stateLoc,street, zip, date)
     setSelectedTime(times);
-   // console.log("Time selected is: ", times);
     openModal();
     let data: any = await getCurrUserData();
-    await sendOneMessage(data.phoneNum, `Your appointment has been booked for [date] at ${times}:00 at ${street}, ${city}, ${stateLoc}.`);
+    let time2 = times > 12 ? times - 12 + ":00pm" : times + ":00am";
+    await sendOneMessage(data.phoneNumber, `Your appointment has been booked for ${dateSelected}, ${time2} at ${street}, ${city}, ${stateLoc}.`, data);
   }
 
   const buildTimes = (times: any, index: number) => {
-   
     return (
       <div key={index}>
         <Button
@@ -212,7 +208,6 @@ const Schedule = () => {
        
         <ScheduleModal showScheduleModal={showScheduleModal} setScheduleModal={setScheduleModal} city={city} stateLoc={stateLoc} time={selectedTime}/>
         <GlobalStyle />
-       
         
       </div>
     );

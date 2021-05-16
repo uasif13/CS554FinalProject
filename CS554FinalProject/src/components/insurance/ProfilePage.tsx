@@ -4,7 +4,8 @@ import ScanInsurance from './ScanInsurance'
 import ManualInsurance from './ManualInsurance';
 import Header from '../Header'
 import "../components.css";
-import {doUpdateUserPhoneAndDist} from "../../firebase/firebaseFunctions";
+import {doUpdateUserPhoneAndDist, getCurrUserData} from "../../firebase/firebaseFunctions";
+import { Alert } from '@material-ui/lab';
 
 function ProfilePage() {
     const [radioButton, setRadioButton] = useState("scan");
@@ -14,12 +15,14 @@ function ProfilePage() {
     const [distance, setDistance] = useState("");
     const [loading2, setLoading2] = useState(false);
     const [error, setError] = useState("");
+    const [succ, setSucc] = useState(false);
 
     const handleDistanceChange = (event: any) => {
         setDistance(event.target.value);
     }
 
     const handlePhoneChange = (event: any) => {
+        setSucc(false);
         setPhoneNum(event.target.value);
     }
 
@@ -28,10 +31,11 @@ function ProfilePage() {
     }
 
     useEffect(() =>{
-
-
 		async function fetchData() {
-			console.log(radioButton)
+            let data = await getCurrUserData();
+            setOptText(data.rabbitMQ);
+            setPhoneNum(data.phoneNumber);
+            setDistance(data.dist);
 			setLoading(false); 
 		}
 		fetchData();
@@ -56,6 +60,7 @@ function ProfilePage() {
     async function submit() {
         setLoading2(true);
 
+        let res: any;
         if (!checkPhoneNumber(phoneNum)) {
             setError("Invalid phone number");
             setLoading2(false);
@@ -63,8 +68,7 @@ function ProfilePage() {
         }
 
         try {
-            let res: any = await doUpdateUserPhoneAndDist(phoneNum, distance, optText);
-            console.log(res)
+            res = await doUpdateUserPhoneAndDist(phoneNum, distance, optText);
 
             if (res.status === 500) {
                 setError(res.message);
@@ -79,6 +83,7 @@ function ProfilePage() {
         }
 
         setLoading2(false);
+        setSucc(true);
     }
 
 
@@ -110,9 +115,9 @@ function ProfilePage() {
                 <div className="phoneInfo">
                     <h1>Contact Information</h1>
 					<p>What is your phone number?</p>
-                    <TextField variant="filled" onChange={handlePhoneChange} id="phone-num" required label="Phone Number (No '-' or '+'):" />
+                    <TextField value={phoneNum} variant="filled" onChange={handlePhoneChange} id="phone-num" required label="Phone Number (No '-' or '+'):" />
                     <p>How far are you willing to travel to get a vaccine?</p>
-                    <TextField variant="filled" onChange={handleDistanceChange} id="distance" required label="Distance in Miles:" />
+                    <TextField value={distance} variant="filled" onChange={handleDistanceChange} id="distance" required label="Distance in Miles:" />
                     <br />
                     <FormControlLabel
                         control={<Checkbox checked={optText} onChange={handleOptText} name="textOpt" />}
@@ -122,7 +127,7 @@ function ProfilePage() {
                     <p className="errors">{error}</p>
                     <br />
                     <br />
-                    {!loading2 ? <Button variant="contained" onClick={submit} color="primary">Save</Button> : <CircularProgress />}
+                    {succ ? <Alert severity="success">Successfuly updated profile</Alert> : !loading2 ? <Button variant="contained" onClick={submit} color="primary">Save</Button> : <CircularProgress />}
                 </div>
 
 				{(radioButton && radioButton === "scan") ? 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseServer";
-import { doUpdateVaccineCount } from "../firebase/firebaseFunctions";
+import { doUpdateVaccineCount, getCurrUserData } from "../firebase/firebaseFunctions";
 import {
   Table,
   TableBody,
@@ -16,6 +16,7 @@ import {
 import Header from "./Header";
 import SignOutButton from "./SignOut";
 import { AuthContext } from "../firebase/firebaseAuth";
+import { sendMessageBatch } from "../messaging/message";
 
 const useStyles = makeStyles({
   table: {
@@ -69,13 +70,8 @@ function AdminHomePage() {
     }
     async function checkAdminPermissions() {
       try {
-        db.ref("Users").on("value", (snapshot) => {
-          snapshot.forEach((snap) => {
-            if (snap.val().email === currentUser.email) {
-              setAdmin(snap.val().isAdmin);
-            }
-          });
-        });
+        let data = await getCurrUserData();
+        setAdmin(data.isAdmin);
       } catch (e) {
         alert(e);
       }
@@ -93,9 +89,11 @@ function AdminHomePage() {
       vaccineCount=vaccineCount - 1;
     }
     console.log(vaccineCount);
+
   await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
-  window.location.reload(true);
+    window.location.reload(true);
    };
+
    const doIncrementVaccines = async (currLoc: any) => {
     console.log(currLoc);
     vaccineCount = currLoc.numVaccines;
@@ -106,6 +104,16 @@ function AdminHomePage() {
     await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
     window.location.reload(true);
    };
+
+  async function notify(location: string) {
+    let res = await sendMessageBatch(`Vaccine Scheduler Alert: New vaccines have been added to the ${location} location. Log into your account to schedule a shot today!`);
+    if (res.status == 200) {
+      alert("Batch sent successfully");
+    } else {
+      alert("Batch failed to send");
+    }
+  }
+
   const buildCard = (currLoc: any, index: number) => {
     return (
       <TableRow key={index}>
@@ -148,7 +156,10 @@ function AdminHomePage() {
           )}
         </TableCell>
         <TableCell align="right">
-          <Button variant="contained" color="secondary">
+          <Button onClick={() => {
+            notify(currLoc.address.city);
+          }
+          } variant="contained" color="secondary">
             Send Alert
           </Button>
         </TableCell>
@@ -170,7 +181,6 @@ function AdminHomePage() {
     return (
       <div>
 		<Header doesGoToProfile={false} doesGoToScheduler={false} doesSignOut={true} doesEdit={false}/>
-        <SignOutButton />
         <h1>Covid Scheduler</h1>
         <p>Admin Home Page</p>
         <TableContainer component={Paper}>
