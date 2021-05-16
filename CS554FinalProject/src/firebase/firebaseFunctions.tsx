@@ -52,6 +52,38 @@ async function doSocialSignIn(provider: string) {
   }
 }
 
+async function doUpdateVaccineCount(location: string, numVaccine: number) {
+  console.log('updating the vaccine count:');
+  try{
+    let foundID: any;
+    // go through and find the specific email 
+    await db.ref().child("Locations").on("value", (snapshot) =>{
+      snapshot.forEach((snap) => {
+        let id = snap.key;
+        let val = snap.val();
+        if (val.address.city === location){
+          console.log("found address", val.address.city)
+          console.log(typeof id)
+          foundID = id;
+        }	
+        return foundID
+      });
+    })
+    console.log(foundID);
+    if(foundID === undefined){
+      throw Error("ID not found")
+    }else{
+    await db.ref('Locations/' + foundID).update({
+      numVaccines: numVaccine
+      }
+    )};
+}catch(e)
+{
+  console.log(e);
+  return e 
+}}
+  
+
 async function doPasswordReset(email: string) {
   try {
     await firebase.auth().sendPasswordResetEmail(email);
@@ -90,10 +122,6 @@ async function createUserData(email: string, password: string, name: string) {
     rabbitMQ: false,
   });
 }
-
-async function doIncrementVaccines(location: object) {}
-
-async function doDecrementVaccines(location: object) {}
 
 async function doUpdateUserPhoneAndDist(
   phoneNum: string,
@@ -165,7 +193,6 @@ async function getCurrUserData() {
   let data: any = {};
   await db.ref("Users/" + uid).on("value", (snap) => {
     data = snap.val();
-    console.log(uid);
   });
 
   return data;
@@ -178,8 +205,7 @@ export {
   doSocialSignIn,
   doPasswordReset,
   doSignOut,
-  doIncrementVaccines,
-  doDecrementVaccines,
+  doUpdateVaccineCount,
   doUpdateUserPhoneAndDist,
   getCurrUserData,
   createUserData,

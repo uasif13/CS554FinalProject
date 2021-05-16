@@ -75,16 +75,22 @@ const Schedule = () => {
   const [showScheduleModal, setScheduleModal]= useState<boolean>(false);
   const [data, setData] = useState<{ [key: string]: [times: number] }>();
   const [selectedTime, setSelectedTime] = useState<number>();
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> f07bd189bacb2ce000dbd603f506d67188f231b6
   useEffect(() => {
     async function fetchData() {
       try {
         let location = state.val.appointmentsForLocation;
         let obj: { [key: string]: [times: number] } = {};
 
+<<<<<<< HEAD
         console.log(state);
 
+=======
+>>>>>>> f07bd189bacb2ce000dbd603f506d67188f231b6
         await Promise.all(
           Object.keys(location).map(async (key) => {
             let snapshot = await db.ref("Appointments/" + key).once("value");
@@ -161,8 +167,7 @@ const Schedule = () => {
    // console.log("Time selected is: ", times);
     openModal();
     let data: any = await getCurrUserData();
-    console.log(data);
-    // await sendOneMessage(data.phoneNum, `Your appointment has been booked for [date] at ${times}:00 at ${street}, ${city}, ${stateLoc}.`);
+    await sendOneMessage(data.phoneNum, `Your appointment has been booked for [date] at ${times}:00 at ${street}, ${city}, ${stateLoc}.`);
   }
 
   const buildTimes = (times: any, index: number) => {

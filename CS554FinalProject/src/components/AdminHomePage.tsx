@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseServer";
 import { doIncrementVaccines } from "../firebase/firebaseFunctions";
 import { doDecrementVaccines } from "../firebase/firebaseFunctions";
+import { doUpdateVaccineCount } from "../firebase/firebaseFunctions";
 import {
   Table,
   TableBody,
@@ -48,6 +49,7 @@ function AdminHomePage() {
   const { currentUser } = useContext(AuthContext);
   const [locations, setLocations] = useState<Array<Location>>([]);
   const classes = useStyles();
+  let vaccineCount = 0;
   const [admin, setAdmin] = useState<Boolean>(true);
 
   let allLocations: Location[] = [];
@@ -85,6 +87,27 @@ function AdminHomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const doDecrementVaccines =  async (currLoc: any) => {
+    console.log(currLoc.address.city);
+    vaccineCount = currLoc.numVaccines;
+    if(vaccineCount > 0)
+    {
+      vaccineCount=vaccineCount - 1;
+    }
+    console.log(vaccineCount);
+  await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
+  window.location.reload(true);
+   };
+   const doIncrementVaccines = async (currLoc: any) => {
+    console.log(currLoc);
+    vaccineCount = currLoc.numVaccines;
+    
+      vaccineCount=vaccineCount +1;
+    
+    console.log(vaccineCount);
+    await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
+    window.location.reload(true);
+   };
   const buildCard = (currLoc: any, index: number) => {
     return (
       <TableRow key={index}>
@@ -92,12 +115,10 @@ function AdminHomePage() {
           {currLoc.address.city}
         </TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines && currLoc.numVaccines > 1
-            ? "Available"
-            : "Fully Booked"}
+          {currLoc.numVaccines}
         </TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines ? (
+          {currLoc.numVaccines !=0 ? (
             <Button
               variant="contained"
               className={classes.button}
@@ -106,14 +127,14 @@ function AdminHomePage() {
                 doDecrementVaccines(currLoc);
               }}
             >
-              Increase Vaccines by 1
+              Decrease Vaccines by 1
             </Button>
           ) : (
             ""
           )}
         </TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines ? (
+          {currLoc.numVaccines >=0 ? (
             <Button
               variant="contained"
               className={classes.button}
@@ -122,7 +143,7 @@ function AdminHomePage() {
                 doIncrementVaccines(currLoc);
               }}
             >
-              Decrease Vaccines by 1
+              Increase Vaccines by 1
             </Button>
           ) : (
             ""
@@ -158,9 +179,9 @@ function AdminHomePage() {
             <TableHead>
               <TableRow>
                 <TableCell> City/Town</TableCell>
-                <TableCell align="right">Status</TableCell>
-                <TableCell align="right">Increase Vaccines</TableCell>
+                <TableCell align="right">Number of Vaccines</TableCell>
                 <TableCell align="right">Decrease Vaccines</TableCell>
+                <TableCell align="right">Increase Vaccines</TableCell>
                 <TableCell align="right">Notify Subscribers</TableCell>
               </TableRow>
             </TableHead>
