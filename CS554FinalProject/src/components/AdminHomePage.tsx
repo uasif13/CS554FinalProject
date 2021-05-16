@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseServer";
-import { doIncrementVaccines } from "../firebase/firebaseFunctions";
-import { doDecrementVaccines } from "../firebase/firebaseFunctions";
 import { doUpdateVaccineCount } from "../firebase/firebaseFunctions";
 import {
   Table,
