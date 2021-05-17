@@ -14,18 +14,46 @@ import {
   Button,
 } from "@material-ui/core";
 import Header from "./Header";
-import SignOutButton from "./SignOut";
 import { AuthContext } from "../firebase/firebaseAuth";
 import { sendMessageBatch } from "../messaging/message";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
-  table: {
-    minWidth: 650,
-  },
-  button: {
-    background: "#3D4CBC",
-    color: "white",
-  },
+    table: {
+      minWidth: 650,
+    },
+    button:{
+      background: '#3D4CBC',
+      color: 'white'
+    }, 
+    buttonRows:{
+        display: 'inline-block',
+        margin: '10px'
+    }, 
+    root: {
+        '& > *': {
+          margin: '12px',
+          width: '25ch',
+        },
+    },
+	paper: {
+		position: 'absolute',
+		padding: '10px',
+		width: 400,
+		color: 'black',
+		backgroundColor: 'white',
+		display: 'flex',
+		alignItems: 'stretch',
+		justifyContent: 'center', 
+		alignContent: 'center', 
+		flexWrap: 'wrap', 
+		flexDirection: 'column',
+	},
+	modal: {
+		display: 'flex', 
+		alignItems:'center', 
+		justifyContent: 'center'
+	} 
 });
 
 interface address {
@@ -47,9 +75,11 @@ interface Location {
 function AdminHomePage() {
   const { currentUser } = useContext(AuthContext);
   const [locations, setLocations] = useState<Array<Location>>([]);
+  const [admin, setAdmin] = useState<Boolean>(true);
+  const history = useHistory();
   const classes = useStyles();
   let vaccineCount = 0;
-  const [admin, setAdmin] = useState<Boolean>(true);
+
 
   let allLocations: Location[] = [];
   let card = null;
@@ -71,6 +101,10 @@ function AdminHomePage() {
     async function checkAdminPermissions() {
       try {
         let data = await getCurrUserData();
+		if (data.isAdmin === false){
+			alert("Hey, you're not an admin! Kicking you out to user pages")
+		}
+		console.log(data.isAdmin);
         setAdmin(data.isAdmin);
       } catch (e) {
         alert(e);
@@ -80,6 +114,7 @@ function AdminHomePage() {
     checkAdminPermissions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   const doDecrementVaccines =  async (currLoc: any) => {
     console.log(currLoc.address.city);
