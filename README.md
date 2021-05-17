@@ -10,10 +10,31 @@
     <li>John Dyer</li>
     <li>Ayesha Parveen</li>
 </ul>
-<h2>Setup</h2>
+<h2>Setup Docker</h2>
 <ol>
     <li>Install Docker on system. ("https://docs.docker.com/get-docker/")</li>
     <li>Install Docker-Compose on system. ("https://docs.docker.com/compose/install/")</li>
     <li>In root of project (Where docker-compose.yml exists) run docker-compose up --build</li>
     <li>Enjoy</li>
 </ol>
+
+<h2>Permissions</h2>
+<ul>
+<h4>User Credentials</h4>
+<li>Register for one on the app!
+
+<h4>Admin Credentials </h4>
+<li>Email: admin@stevens.edu
+<li>Password: admin123
+</ul>
+
+
+<h2>Technologies Used </h2>
+<ul>
+<li>React
+<li>TypeScript
+<li>Firebase Auth
+<li>Tesseract
+<li>Docker 
+<li>Plivo
+</ul>

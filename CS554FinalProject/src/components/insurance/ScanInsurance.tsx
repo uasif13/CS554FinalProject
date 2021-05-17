@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { makeStyles, Button, TextField, Divider} from '@material-ui/core'; 
+import { makeStyles, Button, TextField} from '@material-ui/core'; 
 import CircularProgress, { CircularProgressProps } from '@material-ui/core/CircularProgress';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
@@ -77,6 +77,7 @@ const ScanInsurance =() =>{
     const [memberID, setMemberID] = useState(""); 
     const [groupNum, setGroupNum] = useState(""); 
 	const [progressCircle, setProgressCircle] = useState(0)
+	const [progressText, setProgressText] = useState("");
 	const history = useHistory();
 
     useEffect(() =>{
@@ -128,6 +129,7 @@ const ScanInsurance =() =>{
                 'eng',
                 { logger: m => {
 					console.log(m) 
+					setProgressText(m.status)
 					if(m.status === "recognizing text"){
 						let val = m.progress * 100; 
 						setProgressCircle(val)
@@ -245,15 +247,15 @@ const ScanInsurance =() =>{
                     {!(finished) ? 
                         (userUpload && progress) ? 
 						<div>
-							<h6>...please wait...<br/>
-                            ...extracting text...</h6> 
+							<div><br/><h5>Status: {progressText}</h5></div>
+							<br/>
 							<CircularProgressWithLabel value={progressCircle} />
 						</div>
 
 							: 
                             "" : 
                             <div><br/>
-                            <h6>Completed</h6></div>} 
+                            <h5>Status: Completed</h5></div>} 
                 </div>
                 <hr/>
                 <div>

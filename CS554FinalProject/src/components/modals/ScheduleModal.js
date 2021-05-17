@@ -2,7 +2,14 @@ import React, { useRef, useEffect, useCallback } from "react";
 import ReactModal from "react-modal";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
-import { MdClose } from "react-icons/md";
+import {makeStyles, Button} from '@material-ui/core'; 
+
+const useStyles = makeStyles({
+    button:{
+      background: '#3D4CBC',
+      color: 'white'
+    }
+});
 
 ReactModal.setAppElement("#root");
 const customStyles = {
@@ -13,9 +20,7 @@ const customStyles = {
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
-    width: "50%",
-    border: "1px solid #28547a",
-    borderRadius: "4px",
+    width: "50%"
   },
 };
 
@@ -60,16 +65,6 @@ const ModalContent = styled.div`
   }
 `;
 
-// const CloseModalButton = styled(MdClose)`
-//   cursor: pointer;
-//   position: absolute;
-//   top: 20px;
-//   right: 20px;
-//   width: 32px;
-//   height: 32px;
-//   padding: 0;
-//   z-index: 10;
-// `;
 
 function ScheduleModal({
   showScheduleModal,
@@ -80,6 +75,7 @@ function ScheduleModal({
 }) {
   const modalRef = useRef();
   const history = useHistory();
+  const classes = useStyles();
   let str = " : 00 am";
   if (time > 12) {
     time = time - 12;
@@ -130,7 +126,7 @@ function ScheduleModal({
             at {time}
             {str}
           </p>
-          <button onClick={routeChange}>Return to Homepage</button>
+          <Button className={classes.button} onClick={routeChange}>Return to Homepage</Button>
         </ReactModal>
       ) : null}
     </>
