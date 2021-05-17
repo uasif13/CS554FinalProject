@@ -10,13 +10,25 @@
     <li>John Dyer</li>
     <li>Ayesha Parveen</li>
 </ul>
-<h2>Setup Docker</h2>
-<ol>
-    <li>Install Docker on system. ("https://docs.docker.com/get-docker/")</li>
-    <li>Install Docker-Compose on system. ("https://docs.docker.com/compose/install/")</li>
-    <li>In root of project (Where docker-compose.yml exists) run docker-compose up --build</li>
-    <li>Enjoy</li>
-</ol>
+
+
+<h2>Set Up Docker</h2>
+```bash
+# 1. Install Docker @ https://docs.docker.com/get-docker/
+# 2. Install Docker-Compose on system @ "https://docs.docker.com/compose/install/"
+
+# 3. Run the following 
+cd CS554finalProject 
+docker-compose up --build
+
+# 4. Navigate to localhost:3000 for the app 
+# 5. Enjoy!
+```
+***IMPORTANT: .env and an example insurance card will be provided in submission***
+
+*Note: Docker Desktop for Mac includes Compose along with other Docker apps, so Mac users do not need to install Compose seperately*
+
+
 
 <h2>Permissions</h2>
 <ul>
@@ -29,12 +41,15 @@
 </ul>
 
 
-<h2>Technologies Used </h2>
+<h2>Core Technologies </h2>
 <ul>
 <li>React
 <li>TypeScript
 <li>Firebase Auth
-<li>Tesseract
-<li>Docker 
-<li>Plivo
+</ul>
+<h2>Independent Technologies </h2>
+<ul>
+<li>Tesseract - OCR Engine
+<li>Docker - Containers
+<li>Plivo - Text Messaging
 </ul>
