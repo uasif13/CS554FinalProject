@@ -13,8 +13,10 @@
 
 
 <h2>Set Up Docker</h2>
+
 ```bash
 # 1. Install Docker @ https://docs.docker.com/get-docker/
+
 # 2. Install Docker-Compose on system @ "https://docs.docker.com/compose/install/"
 
 # 3. Run the following 
@@ -24,6 +26,7 @@ docker-compose up --build
 # 4. Navigate to localhost:3000 for the app 
 # 5. Enjoy!
 ```
+
 ***IMPORTANT: .env and an example insurance card will be provided in submission***
 
 *Note: Docker Desktop for Mac includes Compose along with other Docker apps, so Mac users do not need to install Compose seperately*
