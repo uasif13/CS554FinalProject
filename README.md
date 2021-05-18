@@ -27,10 +27,11 @@ docker-compose up --build
 # 5. Enjoy!
 ```
 
-***IMPORTANT: .env and an example insurance card will be provided in submission***
+***IMPORTANT: .env and an example insurance card will be provided in submission (in root directory)***
 
 *Note: Docker Desktop for Mac includes Compose along with other Docker apps, so Mac users do not need to install Compose seperately*
 
+**Note: To test Plivo, you need to register for a new account and add in your actual phone number. **
 
 
 <h2>Permissions</h2>
