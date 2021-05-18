@@ -1,12 +1,11 @@
 import { Button, TextField, FormControl } from "@material-ui/core";
 import React, { useState, ChangeEvent, useContext } from "react";
 // import "../component.css"
-import Header from '../Header'
+import Header from "../Header";
 import {
   doCreateUserWithEmailandPassword,
   createUserData,
 } from "../../firebase/firebaseFunctions";
-import SocialSignIn from "../doSocialSignIn";
 import { useHistory } from "react-router-dom";
 import { AuthContext } from "../../firebase/firebaseAuth";
 import { Redirect } from "react-router-dom";
@@ -21,11 +20,10 @@ function Register() {
   const { currentUser } = useContext(AuthContext);
 
   const createAccount = async () => {
-	let nameCleaned = name.trim();
-	let emailCleaned = email.trim();
-	let usernameCleaned = username.trim();
-	let passwordCleaned = password.trim(); 
-
+    let nameCleaned = name.trim();
+    let emailCleaned = email.trim();
+    let usernameCleaned = username.trim();
+    let passwordCleaned = password.trim();
 
     if (nameCleaned.length === 0) {
       setError("Name is required");
@@ -71,66 +69,73 @@ function Register() {
 
   if (currentUser) {
     return <Redirect to="/user" />;
-  }
-  return (
-    <div>
-	  <Header doesGoToProfile={false} doesGoToScheduler={false} doesSignOut={false} doesEdit={false}/>
-      <h1 className="title">Sign Up as User</h1>
-      <div className="form-card">
-        <form>
-          <TextField
-            variant="filled"
-            onChange={nameHandler}
-            placeholder="First Name"
-            required
-          />
-          <br />
-          <br />
-          <TextField
-            variant="filled"
-            onChange={emailHandler}
-            placeholder="Email"
-            required
-          />
-          <br />
-          <br />
-          <TextField
-            variant="filled"
-            onChange={usernameHandler}
-            placeholder="Username"
-            required
-          />
-          <br />
-          <br />
-          <TextField
-            type="password"
-            onChange={passwordHandler}
-            variant="filled"
-            placeholder="Password"
-            required
-          />
-          <br />
-          <br />
-          <p className="errors">{error}</p>
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              createAccount();
-            }}
-            variant="contained"
-            color="primary"
-          >
-            Submit
-          </Button>
-          <br />
-          <SocialSignIn />
-          <p>
-            Already have an account? <a href="/login">Log In</a>
-          </p>
-        </form>
+  } else if (currentUser && currentUser.email === "admin@stevens.edu") {
+    return <Redirect to="/admin" />;
+  } else {
+    return (
+      <div>
+        <Header
+          doesGoToProfile={false}
+          doesGoToScheduler={false}
+          doesSignOut={false}
+          doesEdit={false}
+        />
+        <h1 className="title">Sign Up as User</h1>
+        <div className="form-card">
+          <form>
+            <TextField
+              variant="filled"
+              onChange={nameHandler}
+              placeholder="First Name"
+              required
+            />
+            <br />
+            <br />
+            <TextField
+              variant="filled"
+              onChange={emailHandler}
+              placeholder="Email"
+              required
+            />
+            <br />
+            <br />
+            <TextField
+              variant="filled"
+              onChange={usernameHandler}
+              placeholder="Username"
+              required
+            />
+            <br />
+            <br />
+            <TextField
+              type="password"
+              onChange={passwordHandler}
+              variant="filled"
+              placeholder="Password"
+              required
+            />
+            <br />
+            <br />
+            <p className="errors">{error}</p>
+            <Button
+              onClick={(e) => {
+                e.preventDefault();
+                createAccount();
+              }}
+              variant="contained"
+              color="primary"
+            >
+              Submit
+            </Button>
+            <br />
+            <p>
+              Already have an account? <a href="/login">Log In</a>
+            </p>
+          </form>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default Register;

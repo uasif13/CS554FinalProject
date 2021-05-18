@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { db } from "../firebase/firebaseServer";
 import {
   Table,
@@ -11,11 +11,12 @@ import {
   makeStyles,
   Button,
 } from "@material-ui/core";
-import { useHistory } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import SignOutButton from "./SignOut";
 import Header from "./Header";
 import { getCurrUserData } from "../firebase/firebaseFunctions";
 import { Alert } from "@material-ui/lab";
+import { AuthContext } from "../firebase/firebaseAuth";
 
 const useStyles = makeStyles({
   table: {
@@ -45,6 +46,7 @@ interface Location {
 }
 
 function UserHomePage() {
+  const { currentUser } = useContext(AuthContext);
   const [locations, setLocations] = useState<Array<Location>>([]);
   const [userData, setUserData] = useState(Object);
   const classes = useStyles();
@@ -89,15 +91,27 @@ function UserHomePage() {
           {currLoc.address.city}
         </TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines && currLoc.numVaccines > 1
-            ? <Alert severity="success">Available</Alert>
-            : <Alert severity="error">Fully Booked</Alert>}
+          {currLoc.numVaccines && currLoc.numVaccines > 1 ? (
+            <Alert severity="success">Available</Alert>
+          ) : (
+            <Alert severity="error">Fully Booked</Alert>
+          )}
         </TableCell>
         <TableCell align="right">
-          {userData.insurance.id == "" ? 
-            <Button variant="contained"
-            color="secondary" onClick={() => {history.push("/profile")}}>Update Insurance Before Booking</Button>
-          : currLoc.numVaccines && currLoc.numVaccines > 1 ? (
+          {userData && userData.insurance.id == "" ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                history.push("/profile");
+              }}
+            >
+              Update Insurance Before Booking
+            </Button>
+          ) : currLoc.numVaccines &&
+            currLoc.numVaccines > 1 &&
+            userData &&
+            !userData.appointments.booked ? (
             <Button
               variant="contained"
               className={classes.button}
@@ -124,25 +138,34 @@ function UserHomePage() {
   }
 
   console.log("Locations", locations);
-  return (
-    <div>
-      <Header doesGoToProfile={true} doesGoToScheduler={false} doesSignOut={true} doesEdit = {true}/>
-      <h1>Covid Scheduler</h1>
-      <p>User Home Page</p>
-      <TableContainer component={Paper}>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell> City/Town</TableCell>
-              <TableCell align="right">Status</TableCell>
-              <TableCell align="right">Book Appointment</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>{card}</TableBody>
-        </Table>
-      </TableContainer>
-    </div>
-  );
+  if (currentUser.email === "admin@stevens.edu") {
+    return <Redirect to="/admin" />;
+  } else {
+    return (
+      <div>
+        <Header
+          doesGoToProfile={true}
+          doesGoToScheduler={false}
+          doesSignOut={true}
+          doesEdit={true}
+        />
+        <h1>Covid Scheduler</h1>
+        <p>User Home Page</p>
+        <TableContainer component={Paper}>
+          <Table className={classes.table} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell> City/Town</TableCell>
+                <TableCell align="right">Status</TableCell>
+                <TableCell align="right">Book Appointment</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>{card}</TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+    );
+  }
 }
 
 export default UserHomePage;
