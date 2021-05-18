@@ -1,10 +1,11 @@
 const { request } = require("express");
 const express = require("express");
 const router = express.Router();
+const xss = require('xss');
 
 router.post("/", async (req, res) => {
-  let dest = req.body.destination;
-  let message = req.body.message;
+  let dest = xss(req.body.destination);
+  let message = xss(req.body.message);
   dest = "+1" + dest;
 
   console.log(dest, message);
