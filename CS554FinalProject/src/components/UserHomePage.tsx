@@ -90,7 +90,7 @@ function UserHomePage() {
           {currLoc.address.city}
         </TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines && currLoc.numVaccines > 1 ? (
+          {currLoc.numVaccines && currLoc.numVaccines >= 1 ? (
             <Alert severity="success">Available</Alert>
           ) : (
             <Alert severity="error">Fully Booked</Alert>
@@ -108,7 +108,7 @@ function UserHomePage() {
               Update Insurance Before Booking
             </Button>
           ) : currLoc.numVaccines &&
-            currLoc.numVaccines > 1 &&
+            currLoc.numVaccines >= 1 &&
             userData &&
             !userData.appointments.booked ? (
             <Button
