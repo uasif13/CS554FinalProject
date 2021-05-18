@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Redirect, useLocation } from "react-router-dom";
 import { makeStyles, Button } from "@material-ui/core";
 import { db } from "../firebase/firebaseServer";
-import ScheduleModal from './modals/ScheduleModal';
-import styled from 'styled-components';
-import { GlobalStyle } from '.././globalStyles';
-import {sendOneMessage} from "../messaging/message";
-import {getCurrUserData} from "../firebase/firebaseFunctions";
+import ScheduleModal from "./modals/ScheduleModal";
+import styled from "styled-components";
+import { GlobalStyle } from ".././globalStyles";
+import { sendOneMessage } from "../messaging/message";
+import { getCurrUserData } from "../firebase/firebaseFunctions";
+import { AuthContext } from "../firebase/firebaseAuth";
 
 const Container = styled.div`
   display: flex;
@@ -66,13 +67,14 @@ interface Location {
 const Schedule = () => {
   const classes = useStyles();
   const { state } = useLocation<Location>();
+  const { currentUser } = useContext(AuthContext);
 
   const [city, setCity] = useState<string>();
   const [stateLoc, setState] = useState<string>();
   const [street, setStreet] = useState<string>();
   const [zip, setZip] = useState<string>();
   const [time, setTime] = useState<Array<number>>();
-  const [showScheduleModal, setScheduleModal]= useState<boolean>(false);
+  const [showScheduleModal, setScheduleModal] = useState<boolean>(false);
   const [data, setData] = useState<{ [key: string]: [times: number] }>();
   const [selectedTime, setSelectedTime] = useState<number>();
   const [dateSelected, setDateSelected] = useState("");
@@ -123,15 +125,15 @@ const Schedule = () => {
     state.val.appointmentsForLocation,
   ]);
 
-  const showTimes =  (times: any) => {
-   setTime(times);
+  const showTimes = (times: any) => {
+    setTime(times);
   };
-  const openModal = () =>{
-    setScheduleModal(prev => !prev);
-}
+  const openModal = () => {
+    setScheduleModal((prev) => !prev);
+  };
 
   const buildButtons = (buttons: any, times: any) => {
-    console.log(buttons)
+    console.log(buttons);
     return (
       <div key={times}>
         <Button
@@ -139,7 +141,7 @@ const Schedule = () => {
           className={classes.button}
           onClick={() => {
             showTimes(times);
-            setDateSelected(buttons.slice(0,10));
+            setDateSelected(buttons.slice(0, 10));
           }}
         >
           {buttons.slice(0, 10)}
@@ -148,14 +150,17 @@ const Schedule = () => {
     );
   };
 
-
-  const chooseAppointment = async (times:any) => {
+  const chooseAppointment = async (times: any) => {
     setSelectedTime(times);
     openModal();
     let data: any = await getCurrUserData();
     let time2 = times > 12 ? times - 12 + ":00pm" : times + ":00am";
-    await sendOneMessage(data.phoneNumber, `Your appointment has been booked for ${dateSelected}, ${time2} at ${street}, ${city}, ${stateLoc}.`, data);
-  }
+    await sendOneMessage(
+      data.phoneNumber,
+      `Your appointment has been booked for ${dateSelected}, ${time2} at ${street}, ${city}, ${stateLoc}.`,
+      data
+    );
+  };
 
   const buildTimes = (times: any, index: number) => {
     return (
@@ -164,20 +169,31 @@ const Schedule = () => {
           variant="contained"
           className={classes.button}
           key={index}
-          onClick={() => {chooseAppointment(times)}}
+          onClick={() => {
+            chooseAppointment(times);
+          }}
         >
           {times > 12 ? times - 12 + ":00 pm" : times + ":00 am"}
         </Button>
-        
       </div>
     );
   };
 
-  if (data) {
+  if (currentUser.email === "admin@stevens.edu") {
+    return <Redirect to="/admin" />;
+  } else if (data) {
     return (
       <div>
         <div className={classes.address}>
-          <a href="/user"><Button className={classes.backButton} variant="contained" color="secondary">Go Back</Button></a>
+          <a href="/user">
+            <Button
+              className={classes.backButton}
+              variant="contained"
+              color="secondary"
+            >
+              Go Back
+            </Button>
+          </a>
           <h1>
             Location: {city}, {stateLoc}
           </h1>
@@ -205,10 +221,15 @@ const Schedule = () => {
               })
             : "No Times Available"}
         </div>
-       
-        <ScheduleModal showScheduleModal={showScheduleModal} setScheduleModal={setScheduleModal} city={city} stateLoc={stateLoc} time={selectedTime}/>
+
+        <ScheduleModal
+          showScheduleModal={showScheduleModal}
+          setScheduleModal={setScheduleModal}
+          city={city}
+          stateLoc={stateLoc}
+          time={selectedTime}
+        />
         <GlobalStyle />
-        
       </div>
     );
   } else {

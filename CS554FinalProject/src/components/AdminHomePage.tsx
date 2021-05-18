@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseServer";
-import { doUpdateVaccineCount, getCurrUserData } from "../firebase/firebaseFunctions";
+import {
+  doUpdateVaccineCount,
+  getCurrUserData,
+} from "../firebase/firebaseFunctions";
 import {
   Table,
   TableBody,
@@ -19,41 +22,41 @@ import { sendMessageBatch } from "../messaging/message";
 import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles({
-    table: {
-      minWidth: 650,
+  table: {
+    minWidth: 650,
+  },
+  button: {
+    background: "#3D4CBC",
+    color: "white",
+  },
+  buttonRows: {
+    display: "inline-block",
+    margin: "10px",
+  },
+  root: {
+    "& > *": {
+      margin: "12px",
+      width: "25ch",
     },
-    button:{
-      background: '#3D4CBC',
-      color: 'white'
-    }, 
-    buttonRows:{
-        display: 'inline-block',
-        margin: '10px'
-    }, 
-    root: {
-        '& > *': {
-          margin: '12px',
-          width: '25ch',
-        },
-    },
-	paper: {
-		position: 'absolute',
-		padding: '10px',
-		width: 400,
-		color: 'black',
-		backgroundColor: 'white',
-		display: 'flex',
-		alignItems: 'stretch',
-		justifyContent: 'center', 
-		alignContent: 'center', 
-		flexWrap: 'wrap', 
-		flexDirection: 'column',
-	},
-	modal: {
-		display: 'flex', 
-		alignItems:'center', 
-		justifyContent: 'center'
-	} 
+  },
+  paper: {
+    position: "absolute",
+    padding: "10px",
+    width: 400,
+    color: "black",
+    backgroundColor: "white",
+    display: "flex",
+    alignItems: "stretch",
+    justifyContent: "center",
+    alignContent: "center",
+    flexWrap: "wrap",
+    flexDirection: "column",
+  },
+  modal: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 interface address {
@@ -80,7 +83,6 @@ function AdminHomePage() {
   const classes = useStyles();
   let vaccineCount = 0;
 
-
   let allLocations: Location[] = [];
   let card = null;
 
@@ -101,11 +103,9 @@ function AdminHomePage() {
     async function checkAdminPermissions() {
       try {
         let data = await getCurrUserData();
-		if (data.isAdmin === false){
-			alert("Hey, you're not an admin! Kicking you out to user pages")
-		}
-		console.log(data.isAdmin);
-        setAdmin(data.isAdmin);
+        if (currentUser.email !== "admin@stevens.edu") {
+          alert("Hey, you're not an admin! Kicking you out to user pages");
+        }
       } catch (e) {
         alert(e);
       }
@@ -115,33 +115,33 @@ function AdminHomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
-  const doDecrementVaccines =  async (currLoc: any) => {
+  const doDecrementVaccines = async (currLoc: any) => {
     console.log(currLoc.address.city);
     vaccineCount = currLoc.numVaccines;
-    if(vaccineCount > 0)
-    {
-      vaccineCount=vaccineCount - 1;
+    if (vaccineCount > 0) {
+      vaccineCount = vaccineCount - 1;
     }
     console.log(vaccineCount);
 
-  await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
+    await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
     window.location.reload(true);
-   };
+  };
 
-   const doIncrementVaccines = async (currLoc: any) => {
+  const doIncrementVaccines = async (currLoc: any) => {
     console.log(currLoc);
     vaccineCount = currLoc.numVaccines;
-    
-      vaccineCount=vaccineCount +1;
-    
+
+    vaccineCount = vaccineCount + 1;
+
     console.log(vaccineCount);
     await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
     window.location.reload(true);
-   };
+  };
 
   async function notify(location: string) {
-    let res = await sendMessageBatch(`Vaccine Scheduler Alert: New vaccines have been added to the ${location} location. Log into your account to schedule a shot today!`);
+    let res = await sendMessageBatch(
+      `Vaccine Scheduler Alert: New vaccines have been added to the ${location} location. Log into your account to schedule a shot today!`
+    );
     if (res.status == 200) {
       alert("Batch sent successfully");
     } else {
@@ -155,11 +155,9 @@ function AdminHomePage() {
         <TableCell component="th" scope="row">
           {currLoc.address.city}
         </TableCell>
+        <TableCell align="right">{currLoc.numVaccines}</TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines}
-        </TableCell>
-        <TableCell align="right">
-          {currLoc.numVaccines !=0 ? (
+          {currLoc.numVaccines != 0 ? (
             <Button
               variant="contained"
               className={classes.button}
@@ -175,7 +173,7 @@ function AdminHomePage() {
           )}
         </TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines >=0 ? (
+          {currLoc.numVaccines >= 0 ? (
             <Button
               variant="contained"
               className={classes.button}
@@ -191,10 +189,13 @@ function AdminHomePage() {
           )}
         </TableCell>
         <TableCell align="right">
-          <Button onClick={() => {
-            notify(currLoc.address.city);
-          }
-          } variant="contained" color="secondary">
+          <Button
+            onClick={() => {
+              notify(currLoc.address.city);
+            }}
+            variant="contained"
+            color="secondary"
+          >
             Send Alert
           </Button>
         </TableCell>
@@ -210,12 +211,17 @@ function AdminHomePage() {
       });
   }
 
-  if (!admin) {
+  if (currentUser.email !== "admin@stevens.edu") {
     return <Redirect to="/user" />;
   } else {
     return (
       <div>
-		<Header doesGoToProfile={false} doesGoToScheduler={false} doesSignOut={true} doesEdit={false}/>
+        <Header
+          doesGoToProfile={false}
+          doesGoToScheduler={false}
+          doesSignOut={true}
+          doesEdit={false}
+        />
         <h1>Covid Scheduler</h1>
         <p>Admin Home Page</p>
         <TableContainer component={Paper}>
