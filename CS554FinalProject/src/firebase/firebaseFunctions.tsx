@@ -53,36 +53,38 @@ async function doSocialSignIn(provider: string) {
 }
 
 async function doUpdateVaccineCount(location: string, numVaccine: number) {
-  console.log('updating the vaccine count:');
-  try{
+  console.log("updating the vaccine count:");
+  try {
     let foundID: any;
-    // go through and find the specific email 
-    await db.ref().child("Locations").on("value", (snapshot) =>{
-      snapshot.forEach((snap) => {
-        let id = snap.key;
-        let val = snap.val();
-        if (val.address.city === location){
-          console.log("found address", val.address.city)
-          console.log(typeof id)
-          foundID = id;
-        }	
-        return foundID
+    // go through and find the specific email
+    await db
+      .ref()
+      .child("Locations")
+      .on("value", (snapshot) => {
+        snapshot.forEach((snap) => {
+          let id = snap.key;
+          let val = snap.val();
+          if (val.address.city === location) {
+            console.log("found address", val.address.city);
+            console.log(typeof id);
+            foundID = id;
+          }
+          return foundID;
+        });
       });
-    })
     console.log(foundID);
-    if(foundID === undefined){
-      throw Error("ID not found")
-    }else{
-    await db.ref('Locations/' + foundID).update({
-      numVaccines: numVaccine
-      }
-    )};
-}catch(e)
-{
-  console.log(e);
-  return e 
-}}
-  
+    if (foundID === undefined) {
+      throw Error("ID not found");
+    } else {
+      await db.ref("Locations/" + foundID).update({
+        numVaccines: numVaccine,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
+}
 
 async function doPasswordReset(email: string) {
   try {
@@ -115,12 +117,34 @@ async function createUserData(email: string, password: string, name: string) {
       id: "",
       provider: "",
     },
+    appointments: {
+      booked: false,
+      location: "",
+    },
     isAdmin: false,
     lastName: name,
     phoneNumber: 1234567890,
     password: password,
     rabbitMQ: false,
   });
+}
+async function appointmentBooked(city: any) {
+  try {
+    let uid = await firebase.auth().currentUser?.uid;
+    if (uid == null) {
+      return { status: 500, message: "user not logged in" };
+    }
+
+    await db.ref("Users/" + uid).update({
+      appointments: {
+        booked: true,
+        location: city,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
 }
 
 async function doUpdateUserPhoneAndDist(
@@ -137,28 +161,26 @@ async function doUpdateUserPhoneAndDist(
     db.ref("Users/" + uid).update({
       phoneNumber: phoneNum,
       rabbitMQ: optIn,
-      dist: dist
+      dist: dist,
     });
-
   } catch (e) {
     return { status: 500, message: e.message };
   }
-  
+
   if (optIn == true) {
     try {
       let data = await getCurrUserData();
-        await sendOneMessage(
-          phoneNum,
-          "Vaccine Scheduler: Congrats! You have successfuly opted in for text messaging. We will update you if vaccines become available in your area.",
-          data,
-        );
+      await sendOneMessage(
+        phoneNum,
+        "Vaccine Scheduler: Congrats! You have successfuly opted in for text messaging. We will update you if vaccines become available in your area.",
+        data
+      );
     } catch (e) {
-      return {status: 500, message: "Internal message error"};
-    } 
+      return { status: 500, message: "Internal message error" };
+    }
   }
 
-  return {status: 200, message: "User updated"};
-
+  return { status: 200, message: "User updated" };
 }
 
 async function getCurrUserData() {
@@ -168,59 +190,61 @@ async function getCurrUserData() {
   }
 
   let data: any = {};
-  data = db.ref("Users/" + uid).once('value').then((snap) => {
-    return snap.val();
-  });
+  data = db
+    .ref("Users/" + uid)
+    .once("value")
+    .then((snap) => {
+      return snap.val();
+    });
 
   return data;
-};
+}
 
-
-
-async function updateInsurance(email: string, memberID: string, groupID: string){
-	try{
-		let uid = await firebase.auth().currentUser?.uid;
+async function updateInsurance(
+  email: string,
+  memberID: string,
+  groupID: string
+) {
+  try {
+    let uid = await firebase.auth().currentUser?.uid;
     if (uid == null) {
       return { status: 500, message: "user not logged in" };
     }
-		
-    await db.ref('Users/' + uid).update({
-			insurance: {
-				group_number: groupID,
-				id: memberID
-			}
-		});
 
-	}catch(e){
-		console.log(e);
-		return e 
-	}
-};
-
-
-async function helper(data: object){
-	console.log("in helper", data);
-	return data; 
+    await db.ref("Users/" + uid).update({
+      insurance: {
+        group_number: groupID,
+        id: memberID,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
 }
 
+async function helper(data: object) {
+  console.log("in helper", data);
+  return data;
+}
 
-async function retrieveUserData(email: string){
-	try{
-		let eventResponse = await db.ref().child("Users")
-		const snapshot = await eventResponse.once('value');
-		let UserData: any
-		snapshot.forEach((snap) => {
-			let val = snap.val();
-			if (val.email === email){
-				console.log("We Found Email", val.email)
-				UserData = val
-			}	
-		});
-		return UserData;
-	}catch(e){
-		console.log(e);
-		return e 
-	}
+async function retrieveUserData(email: string) {
+  try {
+    let eventResponse = await db.ref().child("Users");
+    const snapshot = await eventResponse.once("value");
+    let UserData: any;
+    snapshot.forEach((snap) => {
+      let val = snap.val();
+      if (val.email === email) {
+        console.log("We Found Email", val.email);
+        UserData = val;
+      }
+    });
+    return UserData;
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
 }
 
 export {
@@ -235,6 +259,7 @@ export {
   doUpdateUserPhoneAndDist,
   getCurrUserData,
   createUserData,
-  updateInsurance, 
-  retrieveUserData
+  updateInsurance,
+  retrieveUserData,
+  appointmentBooked,
 };

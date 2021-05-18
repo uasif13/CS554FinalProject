@@ -108,7 +108,9 @@ function UserHomePage() {
             >
               Update Insurance Before Booking
             </Button>
-          ) : currLoc.numVaccines && currLoc.numVaccines > 1 ? (
+          ) : currLoc.numVaccines &&
+            currLoc.numVaccines > 1 &&
+            !userData.appointments.booked ? (
             <Button
               variant="contained"
               className={classes.button}

@@ -69,7 +69,7 @@ function Register() {
 
   if (currentUser) {
     return <Redirect to="/user" />;
-  } else if (currentUser.email === "admin@stevens.edu") {
+  } else if (currentUser && currentUser.email === "admin@stevens.edu") {
     return <Redirect to="/admin" />;
   } else {
     return (

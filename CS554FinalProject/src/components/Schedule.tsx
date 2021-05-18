@@ -1,12 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Redirect, useLocation } from "react-router-dom";
+import { Redirect, useHistory, useLocation } from "react-router-dom";
 import { makeStyles, Button } from "@material-ui/core";
 import { db } from "../firebase/firebaseServer";
 import ScheduleModal from "./modals/ScheduleModal";
 import styled from "styled-components";
 import { GlobalStyle } from ".././globalStyles";
 import { sendOneMessage } from "../messaging/message";
-import { getCurrUserData } from "../firebase/firebaseFunctions";
+import {
+  getCurrUserData,
+  appointmentBooked,
+} from "../firebase/firebaseFunctions";
 import { AuthContext } from "../firebase/firebaseAuth";
 
 const Container = styled.div`
@@ -65,6 +68,7 @@ interface Location {
 }
 
 const Schedule = () => {
+  const history = useHistory();
   const classes = useStyles();
   const { state } = useLocation<Location>();
   const { currentUser } = useContext(AuthContext);
@@ -152,6 +156,7 @@ const Schedule = () => {
 
   const chooseAppointment = async (times: any) => {
     setSelectedTime(times);
+    await appointmentBooked(city);
     openModal();
     let data: any = await getCurrUserData();
     let time2 = times > 12 ? times - 12 + ":00pm" : times + ":00am";

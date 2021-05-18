@@ -2,13 +2,13 @@ import React, { useRef, useEffect, useCallback } from "react";
 import ReactModal from "react-modal";
 import { useHistory } from "react-router-dom";
 import styled from "styled-components";
-import {makeStyles, Button} from '@material-ui/core'; 
+import { makeStyles, Button } from "@material-ui/core";
 
 const useStyles = makeStyles({
-    button:{
-      background: '#3D4CBC',
-      color: 'white'
-    }
+  button: {
+    background: "#3D4CBC",
+    color: "white",
+  },
 });
 
 ReactModal.setAppElement("#root");
@@ -20,7 +20,7 @@ const customStyles = {
     bottom: "auto",
     marginRight: "-50%",
     transform: "translate(-50%, -50%)",
-    width: "50%"
+    width: "50%",
   },
 };
 
@@ -64,7 +64,6 @@ const ModalContent = styled.div`
     border: none;
   }
 `;
-
 
 function ScheduleModal({
   showScheduleModal,
@@ -126,7 +125,9 @@ function ScheduleModal({
             at {time}
             {str}
           </p>
-          <Button className={classes.button} onClick={routeChange}>Return to Homepage</Button>
+          <Button className={classes.button} onClick={routeChange}>
+            Return to Homepage
+          </Button>
         </ReactModal>
       ) : null}
     </>

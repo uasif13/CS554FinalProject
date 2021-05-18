@@ -102,7 +102,7 @@ function AdminHomePage() {
     }
     async function checkAdminPermissions() {
       try {
-        let data = await getCurrUserData();
+        let userData = await getCurrUserData();
         if (currentUser.email !== "admin@stevens.edu") {
           alert("Hey, you're not an admin! Kicking you out to user pages");
         }
