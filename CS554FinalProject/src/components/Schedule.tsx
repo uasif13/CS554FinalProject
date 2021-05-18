@@ -120,14 +120,12 @@ const Schedule = () => {
         console.log(e);
       }
     }
-    fetchData();
-  }, [
-    state.val.address.city,
-    state.val.address.state,
-    state.val.address.street,
-    state.val.address.zip,
-    state.val.appointmentsForLocation,
-  ]);
+    if (state) {
+      fetchData();
+    } else {
+      history.push("/admin");
+    }
+  }, []);
 
   const showTimes = (times: any) => {
     setTime(times);
