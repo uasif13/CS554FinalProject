@@ -145,6 +145,28 @@ async function appointmentBooked(city: any) {
     console.log(e);
     return e;
   }
+  try {
+    let locationID: any;
+    let numVaccine: any;
+    await db.ref("Locations").on("value", (snapshot) =>
+      snapshot.forEach((snap) => {
+        if (snap.val().address.city === city) {
+          locationID = snap.key;
+          numVaccine = snap.val().numVaccines;
+        }
+      })
+    );
+    if (locationID === null) {
+      throw Error("ID not found");
+    } else {
+      await db.ref("Locations/" + locationID).update({
+        numVaccines: numVaccine - 1,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    return e;
+  }
 }
 
 async function doUpdateUserPhoneAndDist(

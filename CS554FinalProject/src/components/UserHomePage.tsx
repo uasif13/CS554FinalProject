@@ -110,6 +110,7 @@ function UserHomePage() {
             </Button>
           ) : currLoc.numVaccines &&
             currLoc.numVaccines > 1 &&
+            userData &&
             !userData.appointments.booked ? (
             <Button
               variant="contained"

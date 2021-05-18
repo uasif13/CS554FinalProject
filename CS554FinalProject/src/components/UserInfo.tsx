@@ -21,9 +21,7 @@ const UserInfo = () => {
         await retrieveUserData(currentUser.email).then((data) => {
           setMemberID(data.insurance.id);
           setGroupID(data.insurance.group_number);
-          data.phoneNumber == "1234567890"
-            ? setPhoneNumber("")
-            : setPhoneNumber(data.phoneNumber);
+          setPhoneNumber(data.phoneNumber);
         });
       }
     }
