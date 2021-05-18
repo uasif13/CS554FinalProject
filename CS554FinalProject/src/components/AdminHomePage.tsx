@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseServer";
-import { createMuiTheme } from '@material-ui/core/styles';
-import { ThemeProvider } from '@material-ui/styles';
+import { createMuiTheme } from "@material-ui/core/styles";
+import { ThemeProvider } from "@material-ui/styles";
 import {
   doUpdateVaccineCount,
   getCurrUserData,
@@ -23,10 +23,10 @@ import { AuthContext } from "../firebase/firebaseAuth";
 import { sendMessageBatch } from "../messaging/message";
 import { useHistory } from "react-router-dom";
 
-const theme =createMuiTheme({
-  palette:{
-    secondary:{
-      main: '#ee003b',
+const theme = createMuiTheme({
+  palette: {
+    secondary: {
+      main: "#ee003b",
     },
   },
 });
@@ -68,6 +68,9 @@ const useStyles = makeStyles({
   },
 });
 
+interface appointments {
+  [keys: string]: any;
+}
 interface address {
   city: string;
   state: string;
@@ -77,11 +80,13 @@ interface address {
 
 interface currLocation {
   address: address;
+  appointmentsForLocation: appointments;
   numVaccines: number;
 }
 
 interface Location {
-  id: currLocation;
+  key: string | null;
+  value: currLocation;
 }
 
 function AdminHomePage() {
@@ -101,7 +106,11 @@ function AdminHomePage() {
         // Calls to Firebase to refer to Location child
         db.ref("Locations").on("value", (snapshot) => {
           snapshot.forEach((snap) => {
-            allLocations.push(snap.val());
+            const locationData = {
+              key: snap.key,
+              value: snap.val(),
+            };
+            allLocations.push(locationData);
           });
           setLocations(allLocations);
         });
@@ -125,25 +134,81 @@ function AdminHomePage() {
   }, []);
 
   const doDecrementVaccines = async (currLoc: any) => {
-    console.log(currLoc.address.city);
-    vaccineCount = currLoc.numVaccines;
+    vaccineCount = currLoc.value.numVaccines;
     if (vaccineCount > 0) {
       vaccineCount = vaccineCount - 1;
     }
-    console.log(vaccineCount);
-
-    await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
+    const appointmentArray = Object.keys(currLoc.value.appointmentsForLocation);
+    let deletedAppointmentID = appointmentArray[appointmentArray.length - 1];
+    await db
+      .ref(
+        "Locations/" +
+          currLoc.key +
+          "/appointmentsForLocation/" +
+          deletedAppointmentID
+      )
+      .remove();
+    await db.ref("Appointments/" + deletedAppointmentID).remove();
+    await doUpdateVaccineCount(currLoc.value.address.city, vaccineCount);
     window.location.reload(true);
   };
 
   const doIncrementVaccines = async (currLoc: any) => {
-    console.log(currLoc);
-    vaccineCount = currLoc.numVaccines;
+    vaccineCount = currLoc.value.numVaccines;
 
     vaccineCount = vaccineCount + 1;
 
-    console.log(vaccineCount);
-    await doUpdateVaccineCount(currLoc.address.city, vaccineCount);
+    const currentLocationRef = db.ref("Locations/" + currLoc.key + "/");
+    const appointmentListRef = db.ref("Appointments");
+    if (vaccineCount === 1) {
+      const newAppointment = appointmentListRef.push();
+      newAppointment.set({
+        date: {
+          day: 25,
+          month: 5,
+          year: 2021,
+        },
+        time: 8,
+      });
+      const appointmentsForLocation: any = {};
+      if (newAppointment.key !== null) {
+        appointmentsForLocation[newAppointment.key] = true;
+        currentLocationRef.update({
+          appointmentsForLocation,
+        });
+      }
+    } else {
+      const appointmentArray = Object.keys(
+        currLoc.value.appointmentsForLocation
+      );
+      let mostRecentAppointmentID =
+        appointmentArray[appointmentArray.length - 1];
+      const recentAppointment = await db
+        .ref("Appointments")
+        .child(mostRecentAppointmentID)
+        .once("value");
+      const newTime = (recentAppointment.val().time % 6) + 7;
+      const newAppointment = appointmentListRef.push();
+      newAppointment.set({
+        date: {
+          day: recentAppointment.val().date.day,
+          month: recentAppointment.val().date.month,
+          year: recentAppointment.val().date.year,
+        },
+        time: newTime,
+      });
+      const newAppointmentForLocation = currentLocationRef.child(
+        "appointmentsForLocation"
+      );
+      const appointmentsForLocation: any = {};
+      if (newAppointment.key !== null) {
+        appointmentsForLocation[newAppointment.key] = true;
+        newAppointmentForLocation.update({
+          ...appointmentsForLocation,
+        });
+      }
+    }
+    await doUpdateVaccineCount(currLoc.value.address.city, vaccineCount);
     window.location.reload(true);
   };
 
@@ -162,11 +227,11 @@ function AdminHomePage() {
     return (
       <TableRow key={index}>
         <TableCell component="th" scope="row">
-          {currLoc.address.city}
+          {currLoc.value.address.city}
         </TableCell>
-        <TableCell align="right">{currLoc.numVaccines}</TableCell>
+        <TableCell align="right">{currLoc.value.numVaccines}</TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines != 0 ? (
+          {currLoc.value.numVaccines != 0 ? (
             <Button
               variant="contained"
               className={classes.button}
@@ -182,7 +247,7 @@ function AdminHomePage() {
           )}
         </TableCell>
         <TableCell align="right">
-          {currLoc.numVaccines >= 0 ? (
+          {currLoc.value.numVaccines >= 0 ? (
             <Button
               variant="contained"
               className={classes.button}
@@ -199,15 +264,16 @@ function AdminHomePage() {
         </TableCell>
         <TableCell align="right">
           <ThemeProvider theme={theme}>
-          <Button className="alert-btn"
-            onClick={() => {
-              notify(currLoc.address.city);
-            }}
-            variant="contained"
-            color="secondary"
-          >
-            Send Alert
-          </Button>
+            <Button
+              className="alert-btn"
+              onClick={() => {
+                notify(currLoc.value.address.city);
+              }}
+              variant="contained"
+              color="secondary"
+            >
+              Send Alert
+            </Button>
           </ThemeProvider>
         </TableCell>
       </TableRow>

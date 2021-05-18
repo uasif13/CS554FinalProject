@@ -85,25 +85,30 @@ const Schedule = () => {
   useEffect(() => {
     async function fetchData() {
       try {
+        console.log("state", state);
         let location = state.val.appointmentsForLocation;
         let obj: { [key: string]: [times: number] } = {};
 
         await Promise.all(
           Object.keys(location).map(async (key) => {
             let snapshot = await db.ref("Appointments/" + key).once("value");
+            let databaseKey;
+            if (snapshot.key) {
+              databaseKey = snapshot.key.toString();
+            }
 
             let value = snapshot.val();
             let day = value.date.day;
-            let month = value.date.month;
+            let month = value.date.month - 1;
             let year = value.date.year;
             let time = value.time;
 
             let apt = new Date(year, month, day);
 
             if (!obj[apt.toString()]) {
-              obj[apt.toString()] = [time];
+              obj[apt.toString() + databaseKey] = [time];
             } else {
-              obj[apt.toString()].push(time);
+              obj[apt.toString() + databaseKey].push(time);
             }
 
             return obj;
@@ -135,7 +140,7 @@ const Schedule = () => {
   };
 
   const buildButtons = (buttons: any, times: any) => {
-    console.log(buttons);
+    console.log("buttons", buttons);
     return (
       <div key={times}>
         <Button
@@ -154,7 +159,7 @@ const Schedule = () => {
 
   const chooseAppointment = async (times: any) => {
     setSelectedTime(times);
-    await appointmentBooked(city);
+    await appointmentBooked(city, state, times);
     openModal();
     let data: any = await getCurrUserData();
     let time2 = times > 12 ? times - 12 + ":00pm" : times + ":00am";
@@ -185,6 +190,7 @@ const Schedule = () => {
   if (currentUser.email === "admin@stevens.edu") {
     return <Redirect to="/admin" />;
   } else if (data) {
+    console.log(data);
     return (
       <div>
         <div className={classes.address}>
@@ -225,14 +231,13 @@ const Schedule = () => {
             : "No Times Available"}
         </div>
 
-		<SchedulerModal 
-		showScheduleModal={showScheduleModal}
-		setScheduleModal={(boolean) => setScheduleModal}
-		city={city}
-		stateLoc={stateLoc}
-		time={selectedTime}
-		
-		/>
+        <SchedulerModal
+          showScheduleModal={showScheduleModal}
+          setScheduleModal={(boolean) => setScheduleModal}
+          city={city}
+          stateLoc={stateLoc}
+          time={selectedTime}
+        />
         <GlobalStyle />
       </div>
     );

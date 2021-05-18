@@ -128,7 +128,10 @@ async function createUserData(email: string, password: string, name: string) {
     rabbitMQ: false,
   });
 }
-async function appointmentBooked(city: any) {
+async function appointmentBooked(city: any, location: any, times: any) {
+  console.log(location);
+  console.log(times);
+  // Update the users object with appointment information
   try {
     let uid = await firebase.auth().currentUser?.uid;
     if (uid == null) {
@@ -145,9 +148,11 @@ async function appointmentBooked(city: any) {
     console.log(e);
     return e;
   }
+  // Updates the locations objects with the appointment information
   try {
     let locationID: any;
     let numVaccine: any;
+    let appointmentID: any;
     await db.ref("Locations").on("value", (snapshot) =>
       snapshot.forEach((snap) => {
         if (snap.val().address.city === city) {
