@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Redirect, useHistory, useLocation } from "react-router-dom";
 import { makeStyles, Button } from "@material-ui/core";
 import { db } from "../firebase/firebaseServer";
-import ScheduleModal from "./modals/ScheduleModal";
+import SchedulerModal from "./modals/SchedulerModal";
 import styled from "styled-components";
 import { GlobalStyle } from ".././globalStyles";
 import { sendOneMessage } from "../messaging/message";
@@ -225,13 +225,14 @@ const Schedule = () => {
             : "No Times Available"}
         </div>
 
-        <ScheduleModal
-          showScheduleModal={showScheduleModal}
-          setScheduleModal={setScheduleModal}
-          city={city}
-          stateLoc={stateLoc}
-          time={selectedTime}
-        />
+		<SchedulerModal 
+		showScheduleModal={showScheduleModal}
+		setScheduleModal={(boolean) => setScheduleModal}
+		city={city}
+		stateLoc={stateLoc}
+		time={selectedTime}
+		
+		/>
         <GlobalStyle />
       </div>
     );

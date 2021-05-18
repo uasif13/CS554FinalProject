@@ -12,7 +12,6 @@ import {
   Button,
 } from "@material-ui/core";
 import { Redirect, useHistory } from "react-router-dom";
-import SignOutButton from "./SignOut";
 import Header from "./Header";
 import { getCurrUserData } from "../firebase/firebaseFunctions";
 import { Alert } from "@material-ui/lab";

@@ -88,6 +88,8 @@ function Register() {
         <div className="form-card">
           <form>
             <TextField
+			id ="firstname"
+			  label="First Name"
               variant="filled"
               onChange={nameHandler}
               placeholder="First Name"
@@ -96,6 +98,8 @@ function Register() {
             <br />
             <br />
             <TextField
+			id ="email"
+			  label="Email"
               variant="filled"
               onChange={emailHandler}
               placeholder="Email"
@@ -104,6 +108,8 @@ function Register() {
             <br />
             <br />
             <TextField
+				id ="username"
+			  label="Username"
               variant="filled"
               onChange={usernameHandler}
               placeholder="Username"
@@ -112,6 +118,8 @@ function Register() {
             <br />
             <br />
             <TextField
+			id ="password"
+			label="Password"
               type="password"
               onChange={passwordHandler}
               variant="filled"

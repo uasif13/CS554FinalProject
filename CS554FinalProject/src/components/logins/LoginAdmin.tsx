@@ -58,7 +58,9 @@ const LoginAdmin = (props: { admin: Boolean }) => {
         />
         <h1 className="title">Login as Admin</h1>
         <div className="form-card">
-          <TextField id="email-id"
+          <TextField 
+		  	id="email-id"
+			label="Email"
             variant="filled"
             onChange={emailHandler}
             placeholder="Email"
@@ -68,7 +70,9 @@ const LoginAdmin = (props: { admin: Boolean }) => {
           <br />
           <br />
           <TextField
+		  	id="password"
             type="password"
+			label="Password"
             onChange={passwordHandler}
             variant="filled"
             placeholder="Password"
