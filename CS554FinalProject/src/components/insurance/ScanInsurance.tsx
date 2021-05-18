@@ -9,6 +9,13 @@ import {updateInsurance} from '../../firebase/firebaseFunctions';
 import { AuthContext } from "../../firebase/firebaseAuth";
 import { useHistory } from "react-router-dom";
 
+
+const myStyle={
+
+    color: "#646464",
+    backgroundColor: "#e0e0e0"
+};
+
 const useStyles = makeStyles({
     table: {
       minWidth: 650,
@@ -37,7 +44,8 @@ const useStyles = makeStyles({
     },
     p:{
         color: 'red'
-    }
+    },
+   
 
 });
 
@@ -210,6 +218,7 @@ const ScanInsurance =() =>{
 
     return(
         <div>
+            
             <div className="form-card-sm">
 			<h1>Scan Insurance Card</h1>
 			<p>Please upload a bright image</p>
@@ -240,7 +249,8 @@ const ScanInsurance =() =>{
                         onClick={extractInsuranceCard}
                         classes={{disabled: classes.button}}
                         disabled={!userUpload || (finished && (userUpload && !progress))}>
-                        Scan Card
+                     <span 
+                     style={myStyle}>Scan Card</span>
                 </Button>  
                 <br/>
                 <div id="progress">
@@ -268,6 +278,7 @@ const ScanInsurance =() =>{
                                         required 
                                         value={memberID} 
                                         disabled={!finished}
+                                        
                                         aria-disabled="true"
                                         label="Member ID" />
                                 </form>
@@ -306,7 +317,7 @@ const ScanInsurance =() =>{
                     className={classes.button} 
                     disabled={!finished}
                     onClick={clearStates}>
-                    Reset
+                    <span style={myStyle}>Reset</span>
                 </Button> 
                 <br/>
                 <br/>
@@ -314,13 +325,12 @@ const ScanInsurance =() =>{
                     className={classes.button} 
                     disabled={!finished}
                     onClick={pushToFireBase}>
-                    Submit
+                   <span style={myStyle}> Submit</span>
                 </Button> 
                 </div>
 
             </div>
             </div>
-           
         </div>
     )
 }; 

@@ -9,7 +9,11 @@ import {
 import { useHistory } from "react-router-dom";
 import { AuthContext } from "../../firebase/firebaseAuth";
 import { Redirect } from "react-router-dom";
+const myStyle={
 
+  color: "#767676",
+  backgroundColor: "#ffffff"
+};
 function Register() {
   const [error, setError] = useState("");
   const [name, setName] = useState("");
@@ -128,7 +132,7 @@ function Register() {
               Submit
             </Button>
             <br />
-            <p>
+            <p style={myStyle}>
               Already have an account? <a href="/login">Log In</a>
             </p>
           </form>

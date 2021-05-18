@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Redirect } from "react-router-dom";
 import { auth, db } from "../firebase/firebaseServer";
+import { createMuiTheme } from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import {
   doUpdateVaccineCount,
   getCurrUserData,
@@ -21,6 +23,13 @@ import { AuthContext } from "../firebase/firebaseAuth";
 import { sendMessageBatch } from "../messaging/message";
 import { useHistory } from "react-router-dom";
 
+const theme =createMuiTheme({
+  palette:{
+    secondary:{
+      main: '#ee003b',
+    },
+  },
+});
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -189,7 +198,8 @@ function AdminHomePage() {
           )}
         </TableCell>
         <TableCell align="right">
-          <Button
+          <ThemeProvider theme={theme}>
+          <Button className="alert-btn"
             onClick={() => {
               notify(currLoc.address.city);
             }}
@@ -198,6 +208,7 @@ function AdminHomePage() {
           >
             Send Alert
           </Button>
+          </ThemeProvider>
         </TableCell>
       </TableRow>
     );

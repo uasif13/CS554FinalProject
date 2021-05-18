@@ -6,6 +6,11 @@ import { doSignInWithEmailAndPassword } from "../../firebase/firebaseFunctions";
 import { Redirect, useHistory } from "react-router-dom";
 import { AuthContext } from "../../firebase/firebaseAuth";
 
+const myStyle={
+
+  color: "#767676",
+  backgroundColor: "#ffffff"
+};
 const Login = (props: { admin: Boolean }) => {
   const { currentUser } = useContext(AuthContext);
   const history = useHistory();
@@ -94,7 +99,7 @@ const Login = (props: { admin: Boolean }) => {
             <a href="/reset">Forgot your Password?</a>
           </p>
           <br />
-          <p>
+          <p style={myStyle}>
             Not on Covid-19 Scheduler yet? <a href="/register">Sign Up</a>
           </p>
         </div>

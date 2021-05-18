@@ -50,4 +50,7 @@
   .errors{
 	  color: red !important;
   }
-  
+
+  .label-sign{
+	color: #030303;
+  }

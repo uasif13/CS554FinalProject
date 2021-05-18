@@ -3,6 +3,11 @@ import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../firebase/firebaseAuth";
 import { Redirect, useHistory } from "react-router-dom";
 import { retrieveUserData } from "../firebase/firebaseFunctions";
+const myStyle={
+
+  color: "#767676",
+  backgroundColor: "#ffffff"
+};
 
 const UserInfo = () => {
   const { currentUser } = useContext(AuthContext);
@@ -48,12 +53,12 @@ const UserInfo = () => {
         <div className="form-card">
           <h2>Here's your information</h2>
 
-          <p>Email: {email} </p>
-          <p>Phone Number: {phoneNumber}</p>
+          <p style={myStyle}>Email: {email} </p>
+          <p style={myStyle}>Phone Number: {phoneNumber}</p>
           <hr />
-          <h4>Insurance</h4>
-          <p>Member ID: {memberID} </p>
-          <p>Group Number: {groupID}</p>
+          <h3>Insurance</h3>
+          <p style={myStyle}>Member ID: {memberID} </p>
+          <p style={myStyle}>Group Number: {groupID}</p>
         </div>
       </div>
     );
