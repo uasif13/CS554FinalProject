@@ -83,6 +83,11 @@ const Schedule = () => {
   const [selectedTime, setSelectedTime] = useState<number>();
   const [dateSelected, setDateSelected] = useState("");
   const [appointmentId, setAppointmentId] = useState("");
+  
+
+  const goToUser = () => {
+	  history.push("/user")
+  }
   useEffect(() => {
     async function fetchData() {
       try {
@@ -203,15 +208,13 @@ const Schedule = () => {
     return (
       <div>
         <div className={classes.address}>
-          <a href="/user">
             <Button
               className={classes.backButton}
               variant="contained"
               color="secondary"
-            >
+			  onClick = {goToUser}>
               Go Back
             </Button>
-          </a>
           <h1>
             Location: {city}, {stateLoc}
           </h1>
