@@ -82,6 +82,7 @@ const Schedule = () => {
   const [data, setData] = useState<{ [key: string]: [times: number] }>();
   const [selectedTime, setSelectedTime] = useState<number>();
   const [dateSelected, setDateSelected] = useState("");
+  const [appointmentId, setAppointmentId] = useState("");
   useEffect(() => {
     async function fetchData() {
       try {
@@ -91,19 +92,29 @@ const Schedule = () => {
         await Promise.all(
           Object.keys(location).map(async (key) => {
             let snapshot = await db.ref("Appointments/" + key).once("value");
+            let databaseKey;
+            if (snapshot.key) {
+              databaseKey = snapshot.key.toString();
+            }
 
             let value = snapshot.val();
-            let day = value.date.day;
-            let month = value.date.month;
-            let year = value.date.year;
-            let time = value.time;
+            let day = 0,
+              month = 0,
+              year = 0,
+              time = 0;
+            if (value) {
+              day = value.date.day;
+              month = value.date.month - 1;
+              year = value.date.year;
+              time = value.time;
+            }
 
             let apt = new Date(year, month, day);
 
             if (!obj[apt.toString()]) {
-              obj[apt.toString()] = [time];
+              obj[apt.toString() + databaseKey] = [time];
             } else {
-              obj[apt.toString()].push(time);
+              obj[apt.toString() + databaseKey].push(time);
             }
 
             return obj;
@@ -127,23 +138,27 @@ const Schedule = () => {
     }
   }, []);
 
-  const showTimes = (times: any) => {
-    setTime(times);
+  const showTimes = (data: any) => {
+    setTime(data);
   };
   const openModal = () => {
     setScheduleModal((prev) => !prev);
   };
 
   const buildButtons = (buttons: any, times: any) => {
-    console.log(buttons);
+    console.log("buttons", buttons);
     return (
-      <div key={times}>
+      <div key={buttons}>
         <Button
           variant="contained"
           className={classes.button}
           onClick={() => {
             showTimes(times);
             setDateSelected(buttons.slice(0, 10));
+            console.log(buttons);
+            let appointmentArray = buttons;
+            appointmentArray = appointmentArray.split(")");
+            setAppointmentId(appointmentArray[appointmentArray.length - 1]);
           }}
         >
           {buttons.slice(0, 10)}
@@ -154,7 +169,7 @@ const Schedule = () => {
 
   const chooseAppointment = async (times: any) => {
     setSelectedTime(times);
-    await appointmentBooked(city);
+    await appointmentBooked(city, state, appointmentId);
     openModal();
     let data: any = await getCurrUserData();
     let time2 = times > 12 ? times - 12 + ":00pm" : times + ":00am";
@@ -225,14 +240,13 @@ const Schedule = () => {
             : "No Times Available"}
         </div>
 
-		<SchedulerModal 
-		showScheduleModal={showScheduleModal}
-		setScheduleModal={(boolean) => setScheduleModal}
-		city={city}
-		stateLoc={stateLoc}
-		time={selectedTime}
-		
-		/>
+        <SchedulerModal
+          showScheduleModal={showScheduleModal}
+          setScheduleModal={(boolean) => setScheduleModal}
+          city={city}
+          stateLoc={stateLoc}
+          time={selectedTime}
+        />
         <GlobalStyle />
       </div>
     );
