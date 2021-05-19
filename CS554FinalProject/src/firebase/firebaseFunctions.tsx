@@ -128,9 +128,9 @@ async function createUserData(email: string, password: string, name: string) {
     rabbitMQ: false,
   });
 }
-async function appointmentBooked(city: any, location: any, times: any) {
-  console.log(location);
-  console.log(times);
+async function appointmentBooked(city: any, location: any, appointmentID: any) {
+  console.log(location.key);
+  console.log(appointmentID);
   // Update the users object with appointment information
   try {
     let uid = await firebase.auth().currentUser?.uid;
@@ -150,24 +150,19 @@ async function appointmentBooked(city: any, location: any, times: any) {
   }
   // Updates the locations objects with the appointment information
   try {
-    let locationID: any;
     let numVaccine: any;
-    let appointmentID: any;
-    await db.ref("Locations").on("value", (snapshot) =>
-      snapshot.forEach((snap) => {
-        if (snap.val().address.city === city) {
-          locationID = snap.key;
-          numVaccine = snap.val().numVaccines;
-        }
-      })
-    );
-    if (locationID === null) {
-      throw Error("ID not found");
-    } else {
-      await db.ref("Locations/" + locationID).update({
-        numVaccines: numVaccine - 1,
-      });
-    }
+    await db
+      .ref(
+        "Locations/" +
+          location.key +
+          "/appointmentsForLocation/" +
+          appointmentID
+      )
+      .remove();
+    await db.ref("Appointments/" + appointmentID).remove();
+    await db.ref("Locations/" + location.key).update({
+      numVaccines: location.val.numVaccines - 1,
+    });
   } catch (e) {
     console.log(e);
     return e;
